@@ -38,3 +38,41 @@
 (define-read-only (int-to-uint) 
     (to-uint 4)
 )
+
+;; Day 5 - Advanced Operators
+(define-read-only (exponent) 
+    (pow 2 3)
+)
+(define-read-only (square-root)
+    (sqrti u9)
+)
+
+(define-read-only (modulo) 
+    (mod u10 u4)
+)
+
+(define-read-only (logTwo) 
+    (log2 (* u2 u8))
+)
+
+(define-read-only (add-substract) 
+    (-
+        (* 5 4)
+        (+ 5)
+    )
+)
+
+;; Day 6 - Strings
+(define-read-only (say-hello) 
+    "Hello"
+)
+(define-read-only (say-hello-world) 
+    (concat "Hello" " World")
+)
+
+(define-read-only (say-hello-world-name) 
+   (concat 
+   (concat "Hello" " World,")  
+   " Jesse"
+   )
+)
