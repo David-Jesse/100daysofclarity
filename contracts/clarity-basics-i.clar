@@ -76,3 +76,33 @@
    " Jesse"
    )
 )
+
+;; Day 7 - Logical Operators(And/Or)
+(define-read-only (and-i) 
+    (and true true)
+)
+(define-read-only (and-ii) 
+    (and true false)
+)
+(define-read-only (and-iii) 
+    (and (> u4 u3) 
+    (not false) 
+    true
+    )
+)
+
+(define-read-only (or-i) 
+    (or true false)
+)
+(define-read-only (or-ii) 
+    (or (not true) false)
+) 
+(define-read-only (or-iii) 
+    (or
+        (< u3 u2)
+        (not true)
+        (and (> u2 u1) true) 
+        true
+    )
+)
+
