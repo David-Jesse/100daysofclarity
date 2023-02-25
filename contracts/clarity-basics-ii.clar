@@ -33,11 +33,35 @@
 
 ;; Day 10 - Constants & Intro to Variables
 (define-constant fav-num u10)
-(define-constant fav-string "Jesus")
+(define-constant fav-string "Hi,")
+(define-data-var fav-num-var uint u12)
+(define-data-var your-name (string-ascii 24) " Jesse")
+
 (define-read-only (show-constant) 
     fav-string
 )
 
 (define-read-only (show-constant-double) 
     (* fav-num u2)
+)
+
+(define-read-only (show-fav-num-var) 
+    (var-get fav-num-var)
+)
+(define-read-only (show-var-double) 
+    (* u2 (var-get fav-num-var))
+)
+(define-read-only (say-hi) 
+    (concat fav-string (var-get your-name))
+)
+
+;; Day 11 - Public Functions & Responses
+(define-read-only (response-example) 
+    (ok u26)
+)
+(define-public (change-name (new-name (string-ascii 24))) 
+    (ok (var-set your-name new-name))
+)
+(define-public (change-fav-num (new-num uint)) 
+    (ok (var-set fav-num-var new-num))
 )
