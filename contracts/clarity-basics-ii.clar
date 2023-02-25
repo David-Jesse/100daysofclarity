@@ -65,3 +65,57 @@
 (define-public (change-fav-num (new-num uint)) 
     (ok (var-set fav-num-var new-num))
 )
+
+;; Day 12 - Tuples & Merging
+(define-read-only (read-tuple-i) 
+    {
+        user-principle: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+        user-name: "David-Jesse",
+        user-balance: u10
+    }
+)
+(define-public (write-tuple-i (new-user-principle principal) (new-user-name (string-ascii 24)) (new-user-balance uint)) 
+   (ok {
+        user-principle: new-user-principle,
+        user-name: new-user-name,
+        user-balance: new-user-balance,
+    })
+)
+(define-data-var original { user-principle: principal, user-name: (string-ascii 26), user-balance: uint}
+     {
+        user-principle: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM,
+        user-name: "David-Jesse",
+        user-balance: u10
+    }
+)
+(define-read-only (read-original) 
+    (var-get original)
+)
+(define-public (merge-principal (new-user-principal principal)) 
+   (ok (merge
+         (var-get original)
+         {user-principal: new-user-principal}
+    ))
+)
+(define-public (merge-user-name (new-user-name (string-ascii 24))) 
+   (ok (merge  
+        (var-get original)
+        {user-name: new-user-name}
+    ))
+)
+(define-public (merge-user-balance (new-user-balance uint)) 
+   (ok (merge  
+        (var-get original)
+        {user-balance: new-user-balance }
+    ))
+)
+(define-public (merge-all (new-user-principal principal) (new-user-name (string-ascii 25)) (new-user-balance uint))
+   (ok (merge  
+        (var-get original)
+        {
+            user-principle: new-user-principal,
+            user-name: new-user-name,
+            user-balanace: new-user-balance
+        }
+    ))
+)
