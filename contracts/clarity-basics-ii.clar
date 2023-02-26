@@ -119,3 +119,13 @@
         }
     ))
 )
+
+;; Block height, which gives us the uint of the current block height
+;; Day 13 - Tx-Sender & Is-Eq
+(define-read-only (show-tx-sender) 
+    tx-sender
+)
+(define-constant admin 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM)
+(define-read-only (check-admin) 
+    (is-eq admin tx-sender)
+)
