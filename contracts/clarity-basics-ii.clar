@@ -141,3 +141,47 @@
 (define-read-only (assert-admin) 
    (ok (asserts! (is-eq tx-sender admin) err-not-auth))
 )
+
+;; Day 15 - Begin
+;; Set & Say Hello
+;; Counter by Even
+
+(define-data-var hello-name (string-ascii 48) "Christine")
+;; @desc - This function allows a user to provide a name, which, if different, changes a name variable & returns "Hello new name"
+;; @params - new-name (string-ascii 48) that  represents the new name.
+(define-public (set-and-say-hello (new-name (string-ascii 48))) 
+    (begin  
+        
+        ;; Assert that name is not empty
+        (asserts! (not (is-eq "" new-name)) (err u1))
+
+        ;; Assert that name is not equal to current name
+         (asserts! (not (is-eq (var-get hello-name) new-name)) (err u2))
+
+        ;; var-set new-name
+        (var-set hello-name new-name)
+        ;; Say hello new-name
+        (ok (concat "Hello, " (var-get hello-name)))   
+    
+    )
+)
+(define-read-only (read-hello-name) 
+    (var-get hello-name)
+)
+
+(define-data-var counter uint u0)
+(define-read-only (read-counter) 
+    (var-get counter)
+)
+
+;; @desc - This functions a user to increase by only an even amount
+;; params -  add-num: uint that the user submits to add the counter.
+(define-public (increment-counter-event (add-num uint)) 
+    (begin  
+        ;; Assert that add-num is even
+        (asserts! (is-eq u0 (mod add-num u2)) (err u3))
+
+        ;; Increment and var-set counter
+        (ok (var-set counter (+ (var-get counter) add-num)))
+    )
+)
