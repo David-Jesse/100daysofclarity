@@ -129,3 +129,15 @@
 (define-read-only (check-admin) 
     (is-eq admin tx-sender)
 )
+;; Asserts: is best used when we want fail case to exit & revert the transaction chain
+;; Day 14 - Condditionals I (Asserts)
+(define-read-only (show-asserts (num uint)) 
+   (ok (asserts! (> num u2) (err u1)))
+)
+(define-constant err-too-large (err u3))
+(define-constant err-too-small (err u4))
+(define-constant err-not-auth (err u5))
+
+(define-read-only (assert-admin) 
+   (ok (asserts! (is-eq tx-sender admin) err-not-auth))
+)
