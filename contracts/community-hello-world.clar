@@ -34,3 +34,37 @@
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Write Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;
+
+;; Update-billboard
+;; Function used by next user to update the community billboard
+;; Params - new-user-name (string-ascii 24)
+(define-private (update-billboard (updated-user-name (string-ascii 24))) 
+    (begin  
+     ;; Assert that tx-sender is not the next-user (approved by Admin)
+
+     ;; Assert that updated user-name is not empty
+
+     ;; Var-set billboard with new keys
+
+        (ok true)
+    )
+)
+
+;; Admin set-new-user
+;; @desc - Function used by admin to set / give permission to new-user
+;; @params - Updated user-principal: principal
+(define-public (admin-set-new-user (updated-user-principal principal)) 
+    (begin  
+
+        ;; Assert that tx-sender is admin
+
+        ;; Assert that updated-user-principal is NOT admin
+
+        ;; Assert that updated user-principal is NOT current next-user
+
+        ;; Var-set next-user with updated-user-principal
+
+        (ok true)
+        
+    )
+)
