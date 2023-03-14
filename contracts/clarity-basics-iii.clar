@@ -1,3 +1,4 @@
+;; Day 20
 ;; title: clarity-basics-iii
 (define-read-only (list-bool) 
     (list true false true)
@@ -37,3 +38,5 @@
 (define-read-only (index-of-principal-list (item principal)) 
     (index-of (var-get principal-list) item)
 )
+
+;; Day 21
