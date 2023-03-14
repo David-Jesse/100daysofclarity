@@ -1,0 +1,44 @@
+Unrecognized command '/cli'
+All commands (run 'C:\Users\IYIOWO\AppData\Roaming\npm\node_modules\@stacks\cli\bin.js help COMMAND' for details):
+  Account Management: 
+    balance, can_stack, call_contract_func, call_read_only_contract_func
+    convert_address, deploy_contract, get_account_history
+    get_account_at, send_btc, send_tokens, stack, stacking_status
+
+  Authentication: 
+    authenticator
+
+  Blockstack ID Management: 
+    migrate_subdomains, renew, register, register_addr
+    register_subdomain, revoke, transfer, tx_preorder, tx_register, update
+
+  CLI: 
+    docs, help
+
+  DID: 
+    get_did_configuration
+
+  Gaia: 
+    gaia_dump_bucket, gaia_getfile, gaia_putfile, gaia_deletefile
+    gaia_listfiles, gaia_restore_bucket, gaia_sethub
+
+  Key Management: 
+    decrypt_keychain, encrypt_keychain, faucet, get_address, get_app_keys
+    get_owner_keys, get_payment_key, get_stacks_wallet_key
+    make_keychain
+
+  Namespace Operations: 
+    get_namespace_blockchain_record, name_import, namespace_preorder
+    namespace_reveal, namespace_ready, price_namespace
+
+  Peer Services: 
+    announce, get_confirmations, get_zonefile, make_zonefile
+    zonefile_push
+
+  Profiles: 
+    profile_sign, profile_store, profile_verify
+
+  Querying Blockstack IDs: 
+    get_blockchain_record, get_blockchain_history, lookup, names, price
+    whois
+Use "help" to list all commands.
