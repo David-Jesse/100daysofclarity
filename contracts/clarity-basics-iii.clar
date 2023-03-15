@@ -51,3 +51,38 @@
             (err u0))
   ))
 )
+
+;; Day 22 - Unwrapping
+;; Unwrap Methods 
+;; Unwrap - (Unwrap! optional | response throw-value): The standard for unwrapping an optional or response with a specific error / throw value
+;; Unwrap-Err - (Unwrap-err! response throw-value): If response is an (err...) it'll unwrap the error value, else it'll return the throw value
+;; Unwrap-Panic - (Unwrap-panic optional | response): Unwrapped if (some..) | (ok..) else this throws a runtime error
+;; Unwrap-Err-Panic - (Unwrap-error-panic response): Unwrapped if response is an (err...), else this throws a runtime error.
+
+(define-public (unwrap-example (new-num uint)) 
+  (ok (var-set list-day-21 
+        (unwrap! 
+            (as-max-len? (append (var-get list-day-21) new-num) u5) 
+         (err "error list at max-length"))
+  ))
+)
+
+(define-public (unwrap-panic-example (new-num uint)) 
+  (ok (var-set list-day-21 
+        (unwrap-panic 
+            (as-max-len? (append (var-get list-day-21) new-num) u5))
+  ))
+)
+
+(define-public (unwrap-err-example (input (response uint uint))) 
+    (ok (unwrap-err! input (err u10)))
+)
+(define-public (try-example (input (response uint uint))) 
+   (ok (try! input))
+)   
+
+;; Unwrap! - Optionals & Response
+;; Unwrap-err - response
+;; Unwrap-panic - Optional & response
+;; Unwrap-err-panic - optional & response
+;; Try! - Optional & response
