@@ -86,3 +86,25 @@
 ;; Unwrap-panic - Optional & response
 ;; Unwrap-err-panic - optional & response
 ;; Try! - Optional & response
+
+;; Day 23 - Default-to / Get
+(define-constant example-tuple (some {
+    example-bool: true,
+    example-num:  none,
+    example-string: none,
+    example-principal: tx-sender
+}))
+
+(define-read-only (read-example-tuple) 
+   (default-to {example-bool: false, example-num: (some u12), example-string: (some "Dave"), example-principal: tx-sender} example-tuple)
+)
+
+;; (define-read-only (read-example-principal) 
+;;     (get example-principal example-tuple)
+;; )
+;; (define-read-only (read-example-num) 
+;;    (default-to u10 (get example-num example-tuple))
+;; )
+;; (define-read-only (read-example-string) 
+;;    (default-to "Hey gorgeous" (get example-string example-tuple))
+;; )
