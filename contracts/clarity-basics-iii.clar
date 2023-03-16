@@ -108,3 +108,40 @@
 ;; (define-read-only (read-example-string) 
 ;;    (default-to "Hey gorgeous" (get example-string example-tuple))
 ;; )
+
+;; Day 24 - Conditionals Contd. - Match & If
+(define-read-only (if-example (test-bool bool))  
+    (if test-bool
+    ;; evaluates to true
+        "evaluated to true"
+    ;; evaluates to false
+      "evaluated to false")
+)   
+
+(define-read-only (if-example-none (num uint)) 
+    (if (and (> num u0) (< num u10)) 
+    ;; evaluates to true
+        num
+    ;; evaluates to false
+        u404
+)
+)
+(define-read-only (match-optional-some) 
+    (match (some u1) 
+    ;; Some value / There was some optional
+        match-value (+ u1 match-value) 
+        ;; No value / no optional
+          u0)
+)
+(define-read-only (match-optional (test-value (optional uint))) 
+    (match test-value
+        match-value (+ u2 match-value) 
+         u0
+          )
+)
+(define-read-only (match-response (test-response (response uint uint))) 
+    (match test-response  
+        ok-value ok-value
+        err-value u0
+    )
+)

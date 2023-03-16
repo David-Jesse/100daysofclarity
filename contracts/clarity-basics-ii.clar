@@ -143,6 +143,7 @@
 )
 
 ;; Day 15 - Begin
+;; Begin: function that alllows for multiple functions within a body, returns the last function
 ;; Set & Say Hello
 ;; Counter by Even
 
@@ -174,7 +175,7 @@
     (var-get counter)
 )
 
-;; @desc - This functions a user to increase by only an even amount
+;; @desc - This function allows a user to increase the counter by only an even amount
 ;; params -  add-num: uint that the user submits to add the counter.
 (define-public (increment-counter-event (add-num uint)) 
     (begin  
