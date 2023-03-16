@@ -145,3 +145,12 @@
         err-value u0
     )
 )
+
+;; Day 25 - Maps
+(define-map first-map principal (string-ascii 24))
+(define-public (set-first-map (username (string-ascii 24))) 
+    (ok (map-set first-map tx-sender username))
+)
+(define-read-only (get-first-map (key principal)) 
+    (map-get? first-map key)
+)
