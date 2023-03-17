@@ -147,10 +147,29 @@
 )
 
 ;; Day 25 - Maps
+;; Maps return optionals
 (define-map first-map principal (string-ascii 24))
 (define-public (set-first-map (username (string-ascii 24))) 
     (ok (map-set first-map tx-sender username))
 )
 (define-read-only (get-first-map (key principal)) 
     (map-get? first-map key)
+)
+
+(define-map second-map principal {
+    username: (string-ascii 24),
+    balance: uint,
+    referrals: (optional principal)
+})
+
+(define-public (set-second-map (new-username (string-ascii 24)) (new-balance uint) (new-referral (optional principal))) 
+    (ok (map-set second-map tx-sender {
+        username: new-username,
+        balance: new-balance,
+        referrals: new-referral
+    }))
+)
+
+(define-read-only (get-second-map (key principal)) 
+    (map-get? second-map key)
 )
