@@ -40,7 +40,7 @@
 )
 
 ;; Day 21 - Lists contd. & Intro to Unwrapping
-(define-data-var list-day-21 (list 5 uint) (list u1 u2 u3 u4))
+(define-data-var list-day-21 (list 7 uint) (list u1 u2 u3 u4))
 (define-read-only (list-length)
     (len (var-get list-day-21))
 )
@@ -62,7 +62,7 @@
 (define-public (unwrap-example (new-num uint)) 
   (ok (var-set list-day-21 
         (unwrap! 
-            (as-max-len? (append (var-get list-day-21) new-num) u5) 
+            (as-max-len? (append (var-get list-day-21) new-num) u7) 
          (err "error list at max-length"))
   ))
 )
@@ -126,6 +126,8 @@
         u404
 )
 )
+
+;; You use match specifically when you want to use conditionals with a response or an optional
 (define-read-only (match-optional-some) 
     (match (some u1) 
     ;; Some value / There was some optional

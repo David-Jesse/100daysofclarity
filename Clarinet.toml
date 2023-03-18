@@ -20,6 +20,11 @@ path = 'contracts/clarity-basics-iii.clar'
 clarity_version = 1
 epoch = 2.0
 
+[contracts.clarity-basics-iv]
+path = 'contracts/clarity-basics-iv.clar'
+clarity_version = 1
+epoch = 2.0
+
 [contracts.community-hello-world]
 path = 'contracts/community-hello-world.clar'
 clarity_version = 1
