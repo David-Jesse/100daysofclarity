@@ -5,6 +5,11 @@ authors = []
 telemetry = false
 cache_dir = '.\.cache'
 requirements = []
+[contracts.artist-discography]
+path = 'contracts/artist-discography.clar'
+clarity_version = 1
+epoch = 2.0
+
 [contracts.clarity-basics-i]
 path = 'contracts/clarity-basics-i.clar'
 clarity_version = 1

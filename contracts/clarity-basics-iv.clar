@@ -22,7 +22,7 @@
     (begin 
 
         ;; Assert that tx-sender is not previous counter-history user
-        (asserts! (is-eq (some tx-sender) (get user (map-get? counter-history (var-get counter)))) (err u0))
+        (asserts! (is-eq  (some tx-sender) (get user (map-get? counter-history (var-get counter)))) (err u0))
 
         ;; Var-set counter history
         (map-set counter-history (var-get counter) {
@@ -60,6 +60,4 @@
         (ok (var-set counter (+ u1 current-counter)))
         
     )
-
-
 )
