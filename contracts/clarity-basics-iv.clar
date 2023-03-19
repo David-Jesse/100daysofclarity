@@ -5,6 +5,16 @@
 ;; Day 26.5 - Let
 ;; Function that allows the initialization/management of local variables and allows for multiple functions within a body return the value of the last function
 
+;; (let
+;;    (
+        ;; Local vars are created/ stored
+;;        (test-var u0)
+;;    )
+
+;;      body (function1)
+;;       (function2)
+;; )
+
 (define-data-var counter uint u0)
 (define-map counter-history uint { user: principal, count: uint })
 
