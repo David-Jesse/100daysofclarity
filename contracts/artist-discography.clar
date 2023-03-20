@@ -38,7 +38,7 @@
 ;; Map that keeps track of a discography
 (define-map discography principal (list 10 uint))
 
-
+;; Day - 28
 ;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;
 ;;;;;;;;;;;;;;;;;;;;
@@ -75,7 +75,7 @@
 ;; Add a track
 ;; @desc - Function that allows user or admin add a track
 ;; @params - (title (string-ascii 26) (duration uint) featured-artist (optional) album-id (uint))
-(define-public (add-a-track (artist principal) (title (string-ascii 26)) (duration uint) (featured (optional principal)) (album-id uint)) 
+(define-public (add-a-track (artist (optional principal)) (title (string-ascii 26)) (duration uint) (featured (optional principal)) (album-id uint)) 
     (let  
         (
             (test u0)
@@ -95,10 +95,75 @@
     )
 )
 
+;; Add album
+;; @desc - A function that allows an artist or admin add a new album or start a new discography and then add an album
+(define-public (add-album-or-create-discography-and-add-album (artist (optional principal)) (title (string-ascii 26)) ) 
+    (let  
+        (
+            (dave-boy u1)
+            ;; This is where the local vars goes
+        )
+
+        ;; This where the body goes
+
+            ;; Check whether discography exists / if discography is some
+
+                ;; Discography exists
+        
+                ;; Discography does not exist
+
+                ;; Map-set new discography
+
+             ;; Map-set new album
+
+                ;; Append new album to discography
+
+        (ok dave-boy)
+    )
+)
+
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Admin Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
 ;; add admin
+;; @desc - Function that the exiting admin can call to add another admin
+;; params - New admin (principal)
+
 ;; Remove admin
+;; @desc - Function that removes an existing admin
+;; params - removed-admin (principal)
+
+(define-public (add-admin (new-admin principal)) 
+    (let  
+        (
+            (test u0)
+
+        )
+
+        ;; Assert that tx-sender is an existing admin
+
+        ;; Assert that new-admin does not exist in admin list
+
+        ;; append new-admin to admin list
+
+        (ok test)
+    )
+)
+
+(define-public (remove-admin (removed-admin principal)) 
+    (let   
+        (
+            (test u2)
+        )
+            ;; Assert that tx-sender is an existing Admin
+
+            ;; Assert that removed admin IS an existing admin
+
+            ;; Remove admin from admin-list
+        
+
+        (ok test)
+    )
+)
