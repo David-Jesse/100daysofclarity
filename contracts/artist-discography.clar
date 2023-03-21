@@ -20,6 +20,9 @@
 ;; Cons, Vars, Maps ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+;; Admins list of principals
+(define-data-var admin (list 10 principal) (list tx-sender))
+
 ;; Map that keeps track of a single track
 (define-map track { artist: principal, album-id: uint,  track-id: uint } {
      title: (string-ascii 26),
@@ -75,51 +78,93 @@
 ;; Add a track
 ;; @desc - Function that allows user or admin add a track
 ;; @params - (title (string-ascii 26) (duration uint) featured-artist (optional) album-id (uint))
-(define-public (add-a-track (artist (optional principal)) (title (string-ascii 26)) (duration uint) (featured (optional principal)) (album-id uint)) 
+(define-public (add-a-track (artist principal) (title (string-ascii 26)) (duration uint) (featured (optional principal)) (album-id uint))
     (let  
         (
-            (test u0)
+            (current-discography (unwrap! (map-get? discography artist) (err u0)) )
+            (current-album (unwrap! (index-of current-discography album-id) (err u1)))
+            (current-album-data (unwrap! (map-get? album {artist: artist, album-id: album-id}) (err u3)))
+            (current-album-tracks (get tracks current-album-data))
+            (current-album-track-id (len current-album-tracks))
+            (next-album-track-id (+ u1 current-album-track-id))
         )
 
         ;; Assert that tx-sender is either artist or admin
+        (asserts! (or (is-eq tx-sender artist) (is-some (index-of (var-get admin) tx-sender))) (err u1))
 
         ;; Assert that album exists in discography
+        (asserts! (is-some (index-of current-discography album-id)) (err u2))
 
         ;; Assert that duration is less than 600 (10mins)
+        (asserts! (< duration u600) (err u3))
 
-        ;; Map-set new track
+        ;; Map-set new track    
+        (map-set track {artist: artist, album-id: album-id, track-id: next-album-track-id} 
+            {
+                title: title,
+                duration: duration,
+                featured: featured
+            }
+        )
 
-        ;; Map-set append track to album
+        ;; Map-set album map by appending new track to album
+        (map-set album {artist: artist, album-id: album-id} 
+           (ok (merge 
+                current-album-data
+                {tracks: (unwrap! (as-max-len? (append current-album-tracks (next-album-track-id)) u4))}
 
-        (ok test)
+            ))
+        )
+
     )
 )
 
+;; Day 31
 ;; Add album
 ;; @desc - A function that allows an artist or admin add a new album or start a new discography and then add an album
-(define-public (add-album-or-create-discography-and-add-album (artist (optional principal)) (title (string-ascii 26)) ) 
-    (let  
+(define-public (add-album-or-create-discography-and-add-album (artist principal) (album-title (string-ascii 26)))
+    (ok (let  
         (
-            (dave-boy u1)
-            ;; This is where the local vars goes
+            (current-discography (default-to (list ) (map-get? discography artist)))
+            (current-album-id (len current-discography))
+            (next-album-id (+ u1 current-album-id))
         )
 
         ;; This where the body goes
 
             ;; Check whether discography exists / if discography is some
+            (if (is-eq current-album-id u0)) 
 
-                ;; Discography exists
+                ;; Empty discography
+                (begin  
+
+                     (map-set discography artist (list current-album-id))
+                     (map-set album {artist: principal, album-id: current-album-id} {
+
+                        title: album-title,
+                        tracks: (list ),
+                        height-published: block-height
+
+                     })
+
+                
+                )
+               
         
-                ;; Discography does not exist
+                ;; Discography exists
+                (begin  
 
-                ;; Map-set new discography
+                    (map-set discography (unwrap! (as-max-len? (append current-discography next-album-id) u4)))
+                    (map-set album {artist: artist, album-id: next-album-id} {
 
-             ;; Map-set new album
+                        title: album-title,
+                        tracks: (list ),
+                        height-published: block-height
+                    })
 
-                ;; Append new album to discography
+                )
+    ))
 
-        (ok dave-boy)
-    )
 )
 
 
