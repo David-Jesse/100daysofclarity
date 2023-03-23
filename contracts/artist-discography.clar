@@ -133,39 +133,42 @@
         ;; This where the body goes
 
             ;; Check whether discography exists / if discography is some
-            (if (is-eq current-album-id u0)) 
+            (ok (if (is-eq current-album-id u0) 
+            
 
                 ;; Empty discography
+
                 (begin  
-
-                     (map-set discography artist (list current-album-id))
-                     (map-set album {artist: principal, album-id: current-album-id} {
-
-                        title: album-title,
-                        tracks: (list ),
-                        height-published: block-height
-
-                     })
-
-                
-                )
-               
-        
-                ;; Discography exists
-                (begin  
-
-                    (map-set discography (unwrap! (as-max-len? (append current-discography next-album-id) u4)))
-                    (map-set album {artist: artist, album-id: next-album-id} {
+                    (map-set discography artist (list current-album-id))
+                    (map-set album {artist: artist, album-id: current-album-id} {
 
                         title: album-title,
                         tracks: (list ),
                         height-published: block-height
                     })
-
                 )
+
+
+                ;; Discography exists
+                (begin  
+
+                    (map-set discography artist (unwrap! (as-max-len? (append current-discography next-album-id) u10) (err u4)))
+                    (map-set album {artist: artist, album-id: next-album-id} {
+                        title: album-title,
+                        tracks: (list ),
+                        height-published: block-height
+
+                    })
+
+                )   
+
+            ))
+
+
     ))
 
 )
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;
