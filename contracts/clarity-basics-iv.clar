@@ -61,3 +61,8 @@
         
     )
 )
+
+;; Day 32 - Syntax
+;; trailing (marked by heavy parenthesis)
+;; Encapsulated (highlights internal functions)
+
