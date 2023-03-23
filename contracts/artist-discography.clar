@@ -79,14 +79,14 @@
 ;; @desc - Function that allows user or admin add a track
 ;; @params - (title (string-ascii 26) (duration uint) featured-artist (optional) album-id (uint))
 (define-public (add-a-track (artist principal) (title (string-ascii 26)) (duration uint) (featured (optional principal)) (album-id uint))
-    (let  
+     (let  
         (
             (current-discography (unwrap! (map-get? discography artist) (err u0)) )
             (current-album (unwrap! (index-of current-discography album-id) (err u1)))
             (current-album-data (unwrap! (map-get? album {artist: artist, album-id: album-id}) (err u3)))
             (current-album-tracks (get tracks current-album-data))
-            (current-album-track-id (len current-album-tracks))
-            (next-album-track-id (+ u1 current-album-track-id))
+            (current-album-tracks-id (len current-album-tracks))
+            (next-album-track-id (+ u1 current-album-tracks-id))
         )
 
         ;; Assert that tx-sender is either artist or admin
@@ -108,14 +108,14 @@
         )
 
         ;; Map-set album map by appending new track to album
-        (map-set album {artist: artist, album-id: album-id} 
-           (ok (merge 
-                current-album-data
-                {tracks: (unwrap! (as-max-len? (append current-album-tracks (next-album-track-id)) u4))}
+        (ok (map-set album {artist: artist, album-id: album-id}   
+            (merge 
+                 current-album-data
+                 {tracks: (unwrap! (as-max-len? (append current-album-tracks next-album-track-id) u20) (err u4))}
 
-            ))
-        )
-
+            )
+        ))
+        
     )
 )
 
