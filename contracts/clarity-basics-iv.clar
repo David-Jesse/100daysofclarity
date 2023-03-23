@@ -66,3 +66,13 @@
 ;; trailing (marked by heavy parenthesis)
 ;; Encapsulated (highlights internal functions)
 
+;; Day 33 - STX-Transfer
+(define-public (send-stx-single) 
+    (stx-transfer? u1000000 tx-sender 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND)
+)
+(define-public (send-stx-double) 
+   (begin 
+        (unwrap! (stx-transfer? u1000000 tx-sender 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND) (err u0))
+        (stx-transfer? u1000000 tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
+   )
+)
