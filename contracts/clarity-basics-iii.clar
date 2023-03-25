@@ -47,7 +47,7 @@
 
 (define-public (add-to-list (new-num uint)) 
   (ok (var-set list-day-21 
-        (unwrap! (as-max-len? (append (var-get list-day-21) new-num) u5) 
+        (unwrap! (as-max-len? (append (var-get list-day-21) new-num) u7) 
             (err u0))
   ))
 )

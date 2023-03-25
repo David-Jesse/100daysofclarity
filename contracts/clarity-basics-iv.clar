@@ -91,3 +91,17 @@
 (define-public (burn-half-of-balance) 
     (stx-burn? (/ (stx-get-balance tx-sender) u2) tx-sender)
 )
+
+;; Day 35 - Block-height
+;; Tx-sender: A keyword used to temporarily store the principal that signed or kicked off a transaction
+;; Block-height: Returns the block height of the stacks blockchain as an unsigned integer
+(define-read-only (read-current-height) 
+    block-height
+)
+(define-constant day-in-blocks u144)
+(define-read-only (has-a-day-passed) 
+    (if (> block-height day-in-blocks) 
+        true
+        false
+     )
+)

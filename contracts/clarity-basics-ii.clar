@@ -2,7 +2,7 @@
 
 ;; Day 8 - Optionals & Parameters
 (define-read-only (show-some-i) 
-    (some u2)
+    (some u3) 
 )
 (define-read-only (show-none-ii) 
     none 
