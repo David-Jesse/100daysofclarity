@@ -104,4 +104,10 @@
         true
         false
      )
+)   
+(define-read-only (has-a-week-passed) 
+    (if (> block-height (* day-in-blocks u7)) 
+        true
+        false 
+     )
 )
