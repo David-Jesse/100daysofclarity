@@ -22,7 +22,7 @@
     (begin 
 
         ;; Assert that tx-sender is not previous counter-history user
-        (asserts! (is-eq  (some tx-sender) (get user (map-get? counter-history (var-get counter)))) (err u0))
+        (asserts! (not (is-eq (some tx-sender) (get user (map-get? counter-history (var-get counter))))) (err u0))
 
         ;; Var-set counter history
         (map-set counter-history (var-get counter) {
@@ -73,7 +73,7 @@
 (define-public (send-stx-double) 
    (begin 
         (unwrap! (stx-transfer? u1000000 tx-sender 'ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND) (err u0))
-        (stx-transfer? u1000000 tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
+         (stx-transfer? u1000000 tx-sender 'ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5)
    )
 )
 

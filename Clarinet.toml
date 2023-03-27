@@ -34,6 +34,16 @@ epoch = 2.0
 path = 'contracts/community-hello-world.clar'
 clarity_version = 1
 epoch = 2.0
+
+[contracts.offspring-will]
+path = 'contracts/offspring-will.clar'
+clarity_version = 1
+epoch = 2.0
+
+[contracts.offspringwill]
+path = 'contracts/offspringwill.clar'
+clarity_version = 1
+epoch = 2.0
 [repl.analysis]
 passes = ['check_checker']
 
