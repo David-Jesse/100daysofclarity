@@ -1,3 +1,4 @@
+;; Day 37
 ;; Offspring-will
 ;; A smart contract that allows parents to create and fund wallets unlockable only by parent or offspring
 ;; Written by David-Jesse
@@ -39,12 +40,20 @@
     })
 
 
-
+;; Day 38
 ;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;
 ;;;;;;;;;;;;;;;;;;;;
 
+;; Get offspring wallet
+(define-read-only (get-offspring-wallet (parent principal)) 
+    (map-get? offspring-wallet parent)
+)
 
+;; Get offspring wallet balance
+(define-read-only (get-off-spring-wallet-balance (parent principal)) 
+    (get balance (map-get? offspring-wallet parent))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Parent Functions ;;
