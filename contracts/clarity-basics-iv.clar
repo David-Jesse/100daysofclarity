@@ -95,6 +95,7 @@
 ;; Day 35 - Block-height
 ;; Tx-sender: A keyword used to temporarily store the principal that signed or kicked off a transaction
 ;; Block-height: Returns the block height of the stacks blockchain as an unsigned integer
+;; 144 is the days of block in a day
 (define-read-only (read-current-height) 
     block-height
 )
