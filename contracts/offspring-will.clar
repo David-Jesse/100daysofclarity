@@ -6,10 +6,22 @@
 ;; Offspring wallet
 ;; This is our main map that is created & funded by a parent & only unlockable by an assigned offspring (principal)
 ;; Principal -> {offspring-principal: principal, offspring-dob: uint, balance: int}
+;; 1. Create Wallet
+;; 2. Fund Wallet
+;; 3. Claim Wallet
+;;  i - Offspring
+;;  ii  - Parent/Admin
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Cons, Vars, Maps ;;
 ;;;;;;;;;;;;;;;;;;;;;;
+
+;; Deployer
+(define-constant deployer tx-sender)
+
+;; Contract
+(define-constant contract (as-contract tx-sender))
 
 ;; Create Offspring Wallet fee
 (define-constant create-wallet-fee u5000000)
@@ -28,6 +40,7 @@
 
 ;; 18 years in block height (18 years * 365 * 144 blocks/day)
 (define-constant eighteen-years-in-block-height (* u18 (* u144 u365)))
+
 ;; Admin list of principals
 (define-data-var admin (list 10 principal) (list tx-sender))
 
@@ -63,6 +76,7 @@
     (default-to u0 (get balance (map-get? offspring-wallet parent)))
 )
 
+;; Get offspring wallet dob
 (define-read-only (get-offspring-wallet-dob (parent principal)) 
     (get offspring-dob (map-get? offspring-wallet parent))  
 )
@@ -82,10 +96,62 @@
     )
 )
 
+;; Get earned fees
+(define-read-only (get-earned-fees) 
+    (var-get total-fees-earned)
+)
+
+;; Get STX in contract
+(define-read-only (get-contract-stx-balance) 
+    (stx-get-balance contract)
+)
+
+;; Day 39
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Parent Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+;; (define-map offspring-wallet principal { 
+;;     offspring-principal: principal,
+;;     offspring-dob: uint,
+;;     balance: uint  
+;;     })
+
+;; Create Wallet
+;; @desc - creates new offspring wallet with new parent (no initial deposit)
+;; @params - new-offspring-principal: principal, new-offspring-dob: uint
+(define-public (create-wallet (new-offspring-principal principal) (new-offsprinf-dob uint)) 
+    (let  
+        (
+            ;; local vars
+
+
+        )
+            ;; Assert that map-get? offspring wallet is none
+
+            ;; Assert that new-offspring-dob is at least higher than block-height - 18 years of blocks
+
+            ;; Map-set offspring-wallet
+
+            ;; function body
+        (ok 1)
+    )
+)
+
+;; Fund Wallet
+;;  @desc - allows anyone to fund an existing wallet
+;; @params - parent-principal: principal, amount: uint
+(define-public (fund-wallet (parent-principal principal) (amount uint)) 
+    (let 
+        (
+            ;; Local vars
+
+        )
+
+            ;; function body
+            (ok 1)
+    )
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
