@@ -66,21 +66,17 @@
 )
 
 ;; Get offspring wallet principal
-
 (define-read-only (get-offspring-wallet-principal (parent principal)) 
     (get offspring-principal (map-get? offspring-wallet parent))  
 )
-
 ;; Get offspring wallet balance
 (define-read-only (get-offspring-wallet-balance (parent principal)) 
     (default-to u0 (get balance (map-get? offspring-wallet parent)))
 )
-
 ;; Get offspring wallet dob
 (define-read-only (get-offspring-wallet-dob (parent principal)) 
     (get offspring-dob (map-get? offspring-wallet parent))  
 )
-
 ;; Get offspring Wallet unlock height
 (define-read-only (get-off-spring-wallet-unlock-height (parent principal)) 
     (let 
@@ -89,7 +85,6 @@
             (offspring-dob (unwrap! (get-offspring-wallet-dob parent) (err u1)))
 
         )
-
 
             ;; function body
             (ok (+ offspring-dob eighteen-years-in-block-height))
@@ -106,16 +101,12 @@
     (stx-get-balance contract)
 )
 
-;; Day 39
+;; Day 39 - Outlining the public functions Parents Functions
+;; Day 40 - Outling the public functions for Offspring functions
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Parent Functions ;;
-;;;;;;;;;;;;;;;;;;;;;;
-
-;; (define-map offspring-wallet principal { 
-;;     offspring-principal: principal,
-;;     offspring-dob: uint,
-;;     balance: uint  
-;;     })
+;;;;;;;;;;;;;;;;;;;;;; 
 
 ;; Create Wallet
 ;; @desc - creates new offspring wallet with new parent (no initial deposit)
@@ -123,24 +114,36 @@
 (define-public (create-wallet (new-offspring-principal principal) (new-offspring-dob uint)) 
     (let  
         (
+
+            (current-total-fees (var-get total-fees-earned))
+            (new-total-fees (+ current-total-fees create-wallet-fee))
+
             ;; local vars
 
 
         )
             ;; Assert that map-get? offspring wallet is none
+            (asserts! (is-none (map-get? offspring-wallet tx-sender)) (err "err-wallet-already-exists"))
 
             ;; Assert that new-offspring-dob is at least higher than block-height - 18 years of blocks
+           ;; (asserts! (> new-offspring-dob (- block-height eighteen-years-in-block-height)) (err "err-past-18-years"))
 
             ;; Assert that the new-offspring-principal is NOT the admin OR tx-sender
+            (asserts! (or (not (is-eq tx-sender new-offspring-principal)) (is-none (index-of (var-get admin) new-offspring-principal))) (err "invalid-offspring-principal"))
 
-            ;; Pay create wallet fee in STX
+            ;; Pay create wallet fee in STX (5 stx)
+            (unwrap! (stx-transfer? create-wallet-fee tx-sender deployer) (err "err-stx-transfer"))
             
             ;; Var-set total fees
+            (var-set total-fees-earned new-total-fees)
 
             ;; Map-set offspring-wallet
+            (ok (map-set offspring-wallet tx-sender {
+                offspring-principal: new-offspring-principal,
+                offspring-dob: new-offspring-dob,
+                balance: u0
+            }))
 
-            ;; function body
-        (ok 1)
     )
 )
 
@@ -166,7 +169,7 @@
             ;; Var-set total fees
 
 
-            ;; Map-set current offspring-wallet by merging with old balance + amount
+            ;; Map-set current offspring-wallet by merging old balance + amount
 
 
             ;; function body
@@ -174,13 +177,6 @@
     )
 )
 
-;; (define-map offspring-wallet principal { 
-;;     offspring-principal: principal,
-;;     offspring-dob: uint,
-;;     balance: uint  
-;;     })
-
-;; Day 40
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Offspring Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -202,7 +198,7 @@
 
             ;; Send stx (amount - withhdrawal) to offspring
 
-            ;; Send stx withdrawal to deployer
+            ;; Send stx withdrawal-fee to deployer
 
             ;; Delete offstring-wallet map
 
@@ -220,7 +216,7 @@
 
 ;; Emergency claim
 ;; @desc - allows either parent or an admin to withdraw all stacks - emergency withdrawal fee back to parent and removes wallet
-;; @params - parent - principal
+;; @params - parent: principal
 (define-public (emergency-claim (parent principal)) 
     (let 
         (
@@ -279,7 +275,7 @@
 
         )
 
-        ;; Asserts that tx-sender is a current admin\
+        ;; Asserts that tx-sender is a current admin
 
         ;; Filter remove removed-admin
 
