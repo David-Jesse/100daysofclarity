@@ -27,7 +27,7 @@
 (define-constant create-wallet-fee u5000000)
 
 ;; Add offspring wallet funds fee
-(define-constant offspring-wallet-funds-fee u2000000)
+(define-constant add-walllet-funds-fee u2000000)
 
 ;; Min . Add offspring wallet funds amount
 (define-constant min-add-wallet-amount u5000000)
@@ -101,7 +101,7 @@
     (stx-get-balance contract)
 )
 
-;; Day 39 - Outlining the public functions Parents Functions
+;; Day 39 - Outlining the public functions for Parents Functions
 ;; Day 40 - Outling the public functions for Offspring functions
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -117,9 +117,6 @@
 
             (current-total-fees (var-get total-fees-earned))
             (new-total-fees (+ current-total-fees create-wallet-fee))
-
-            ;; local vars
-
 
         )
             ;; Assert that map-get? offspring wallet is none
@@ -155,22 +152,28 @@
         (
             ;; Local vars
             (current-offspring-wallet (unwrap! (map-get? offspring-wallet parent) (err "err-no-offspring-wallet")))
+            (current-total-fees (var-get total-fees-earned))
+            (new-total-fees (+ current-total-fees min-add-wallet-amount))
 
         )
             ;; Assert that amount is higher than min-add-wallet-amount ( 5 stx)
-
+            (asserts! (> amount min-add-wallet-amount) (err "not-enough-stx"))
             
             ;; Send stx (amount - fee) to contract
-
+            (unwrap! (stx-transfer? (- amount add-walllet-funds-fee) tx-sender contract)  (err "err-sending-stx-to-contract"))
 
             ;; Send stx (fee) to deployer
-
+            (unwrap! (stx-transfer? add-walllet-funds-fee tx-sender deployer) (err ""))
 
             ;; Var-set total fees
-
+            (var-set total-fees-earned new-total-fees)
 
             ;; Map-set current offspring-wallet by merging old balance + amount
-
+            (map-set offspring-wallet parent 
+                (merge  
+                    current-offspring-wallet
+                )
+            )
 
             ;; function body
             (ok 1)
