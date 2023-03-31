@@ -211,7 +211,7 @@
             (unwrap! (as-contract (stx-transfer? (- current-balance current-withdrawal-fee) tx-sender current-offspring)) (err "err-sending-stx-offspring"))
 
             ;; Send stx withdrawal fee to deployer
-            (unwrap! (as-contract (stx-transfer? (current-withdrawal-fee) tx-sender deployer)) (err "err-sending-stx-deployer"))
+            (unwrap! (as-contract (stx-transfer? current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-deployer"))
 
             ;; Delete offstring-wallet map
             (map-delete offspring-wallet parent)
