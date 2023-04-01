@@ -29,7 +29,7 @@
 ;; Add offspring wallet funds fee
 (define-constant add-walllet-funds-fee u2000000)
 
-;; Min . Add offspring wallet funds amount
+;; Min. Add offspring wallet funds amount
 (define-constant min-add-wallet-amount u5000000)
 
 ;; Early Withdrawal fee (10%)
@@ -42,7 +42,7 @@
 (define-constant eighteen-years-in-block-height (* u18 (* u144 u365)))
 
 ;; Admin list of principals
-(define-data-var admin (list 10 principal) (list tx-sender))
+(define-data-var admins (list 10 principal) (list tx-sender))
 
 ;; Total fees earned
 (define-data-var total-fees-earned uint u0)
@@ -144,6 +144,7 @@
     )
 )
 
+;; Day 42
 ;; Fund Wallet
 ;;  @desc - allows anyone to fund an existing wallet
 ;; @params - parent: principal, amount: uint
@@ -197,7 +198,7 @@
             (current-offspring (get offspring-principal current-offspring-wallet))
             (current-dob (get offspring-dob current-offspring-wallet))
             (current-balance (get balance current-offspring-wallet))
-            (current-withdrawal-fee (/ (* current-balance u2) u100))
+            (current-withdrawal-fee (/ (* current-balance early-withdrawal-fee) u100))
             (current-total-fees (var-get total-fees-earned))
             (new-total-fees (+ current-total-fees current-withdrawal-fee))
         )
@@ -208,10 +209,10 @@
             (asserts! (> block-height (+ current-dob eighteen-years-in-block-height)) (err "err-not-eighteen"))
 
             ;; Send stx (amount - withhdrawal) to offspring
-            (unwrap! (as-contract (stx-transfer? (- current-balance current-withdrawal-fee) tx-sender current-offspring)) (err "err-sending-stx-offspring"))
+            (unwrap! (as-contract (stx-transfer? (- current-balance early-withdrawal-fee) tx-sender parent)) (err "err-sending-stx-to-offspring"))
 
             ;; Send stx withdrawal fee to deployer
-            (unwrap! (as-contract (stx-transfer? current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-deployer"))
+            (unwrap! (as-contract (stx-transfer? current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-to-deployer"))
 
             ;; Delete offstring-wallet map
             (map-delete offspring-wallet parent)
@@ -233,12 +234,19 @@
         (
             ;; Local vars
             (current-offspring-wallet (unwrap! (map-get? offspring-wallet parent) (err "err-no-offspring-wallet")))
-
+            (current-offspring-dob (get offspring-dob current-offspring-wallet))
+            (current-balance (get balance current-offspring-wallet))
+            (current-withdrawal-fee (/ (* current-balance u2) u100))
+            (current-total-fees (var-get total-fees-earned))
+            (new-total-fees (+ current-total-fees current-withdrawal-fee))
 
         )
+
             ;; Assert that tx-sender is either parent or one of the admins
+            (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admin) tx-sender))) (err "err-not-unauthorized"))
 
             ;; Assert that blockheight is < 18years from dob
+            (asserts! (< block-height (+ current-offspring-dob eighteen-years-in-block-height)) (err "err-too-late"))
 
             ;; Send stx (amount - emergency-withhdrawal) to offspring
 
@@ -263,33 +271,18 @@
 (define-public (add-admin (new-admin principal)) 
     (let  
         (
-            
+            (current-admin (var-get admins))
         )
             ;; Assert that tx-sender is a current admin
+            (asserts! (is-some (index-of current-admin tx-sender)) (err "err-not-authorized"))
 
             ;; Assert that new-admin does not exist in list of admins
+            (asserts! (is-some (index-of current-admin new-admin)) (err "err-duplicate-admins"))
 
             ;; Append new-admin to list of admins
+            (ok (var-set admins 
+                (unwrap! (as-max-len? (append current-admins new-admin) u10) (err "err-admin-list-overflow"))
+            ))
 
-
-        (ok 1)
-    )
-)
-
-;; Remove Admin
-;; @desc - Function that lets you remove an existing admin
-;; @params - removed-admin: principal
-(define-public (remove-admin (removed-admin principal)) 
-    (let   
-        (
-
-
-        )
-
-        ;; Asserts that tx-sender is a current admin
-
-        ;; Filter remove removed-admin
-
-        (ok 1)
     )
 )
