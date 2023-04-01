@@ -126,7 +126,7 @@
            ;; (asserts! (> new-offspring-dob (- block-height eighteen-years-in-block-height)) (err "err-past-18-years"))
 
             ;; Assert that the new-offspring-principal is NOT the admin OR tx-sender
-            (asserts! (or (not (is-eq tx-sender new-offspring-principal)) (is-none (index-of (var-get admin) new-offspring-principal))) (err "invalid-offspring-principal"))
+            (asserts! (or (not (is-eq tx-sender new-offspring-principal)) (is-none (index-of (var-get admins) new-offspring-principal))) (err "invalid-offspring-principal"))
 
             ;; Pay create wallet fee in STX (5 stx)
             (unwrap! (stx-transfer? create-wallet-fee tx-sender deployer) (err "err-stx-transfer"))
@@ -242,8 +242,7 @@
 
         )
 
-            ;; Assert that tx-sender is either parent or one of the admins
-            (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admin) tx-sender))) (err "err-not-unauthorized"))
+            (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admins) tx-sender))) (err "err-not-unauthorized"))
 
             ;; Assert that blockheight is < 18years from dob
             (asserts! (< block-height (+ current-offspring-dob eighteen-years-in-block-height)) (err "err-too-late"))
