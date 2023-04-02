@@ -154,7 +154,7 @@
             ;; Local vars
             (current-offspring-wallet (unwrap! (map-get? offspring-wallet parent) (err "err-no-offspring-wallet")))
             (current-offspring-wallet-balance (get balance current-offspring-wallet))
-            (new-offspring-wallet-balance (+ amount current-offspring-wallet-balance))
+            (new-offspring-wallet-balance (+ (- amount add-walllet-funds-fee) current-offspring-wallet-balance))
             (current-total-fees (var-get total-fees-earned))
             (new-total-fees (+ current-total-fees min-add-wallet-amount))
 
@@ -203,13 +203,13 @@
             (new-total-fees (+ current-total-fees current-withdrawal-fee))
         )
             ;; Asserts that tx-sender is-eq to the offspring-principal
-            (asserts! (is-eq current-offspring tx-sender) (err "err-not-offspring-principal"))
+            (asserts! (is-eq tx-sender current-offspring) (err "err-not-offspring-principal"))
 
             ;; Assert that blockheight is 18 years later than offspring-dob
             (asserts! (> block-height (+ current-dob eighteen-years-in-block-height)) (err "err-not-eighteen"))
 
             ;; Send stx (amount - withhdrawal) to offspring
-            (unwrap! (as-contract (stx-transfer? (- current-balance early-withdrawal-fee) tx-sender parent)) (err "err-sending-stx-to-offspring"))
+            (unwrap! (as-contract (stx-transfer? (- current-balance current-withdrawal-fee) tx-sender current-offspring)) (err "err-sending-stx-to-offspring"))
 
             ;; Send stx withdrawal fee to deployer
             (unwrap! (as-contract (stx-transfer? current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-to-deployer"))
