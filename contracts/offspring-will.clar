@@ -154,7 +154,7 @@
             ;; Local vars
             (current-offspring-wallet (unwrap! (map-get? offspring-wallet parent) (err "err-no-offspring-wallet")))
             (current-offspring-wallet-balance (get balance current-offspring-wallet))
-            (new-offspring-wallet-balance (+ (- amount add-walllet-funds-fee) current-offspring-wallet-balance))
+            (new-offspring-wallet-balance (+ amount current-offspring-wallet-balance))
             (current-total-fees (var-get total-fees-earned))
             (new-total-fees (+ current-total-fees min-add-wallet-amount))
 
@@ -236,25 +236,29 @@
             (current-offspring-wallet (unwrap! (map-get? offspring-wallet parent) (err "err-no-offspring-wallet")))
             (current-offspring-dob (get offspring-dob current-offspring-wallet))
             (current-balance (get balance current-offspring-wallet))
-            (current-withdrawal-fee (/ (* current-balance u2) u100))
+            (current-withdrawal-fee (/ (* current-balance early-withdrawal-fee) u100))
             (current-total-fees (var-get total-fees-earned))
             (new-total-fees (+ current-total-fees current-withdrawal-fee))
 
         )
-
+            ;; Assert that tx-semder is either parent or one of admins
             (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admins) tx-sender))) (err "err-not-unauthorized"))
 
             ;; Assert that blockheight is < 18years from dob
             (asserts! (< block-height (+ current-offspring-dob eighteen-years-in-block-height)) (err "err-too-late"))
 
-            ;; Send stx (amount - emergency-withhdrawal) to offspring
+            ;; Send stx (amount - emergency-withhdrawal) to parent
+            (unwrap! (as-contract (stx-transfer? (- current-balance current-withdrawal-fee) tx-sender parent)) (err "err-sending-stx-to-parent"))
 
             ;; Send stx emergency-withdrawal fee to deployer
+            (unwrap! (as-contract (stx-transfer?  current-withdrawal-fee tx-sender deployer)) (err "err-sending-stx-to-deployer"))
 
             ;; Delete offstring-wallet map
+            (map-delete offspring-wallet parent)
 
             ;; Update total fees earned
-             (ok 1)
+            (ok (var-set total-fees-earned new-total-fees))
+            
      )
 )
 
@@ -280,8 +284,7 @@
 
             ;; Append new-admin to list of admins
             (ok (var-set admins 
-                (unwrap! (as-max-len? (append current-admins new-admin) u10) (err "err-admin-list-overflow"))
+                (unwrap! (as-max-len? (append current-admin new-admin) u10) (err "err-admin-list-overflow"))
             ))
-
     )
 )
