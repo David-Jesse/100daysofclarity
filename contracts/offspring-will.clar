@@ -101,6 +101,13 @@
     (stx-get-balance contract)
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Private Functions ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+ (define-private (is-parent-or-owner (parent principal)) 
+    (asserts! (or (is-eq tx-sender parent) (is-some (index-of (var-get admins) tx-sender))) false)
+ )
+
 ;; Day 39 - Outlining the public functions for Parents Functions
 ;; Day 40 - Outling the public functions for Offspring functions
 
