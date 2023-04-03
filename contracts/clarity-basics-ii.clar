@@ -129,7 +129,7 @@
 (define-read-only (check-admin) 
     (is-eq admin tx-sender)
 )
-;; Asserts: is best used when we want fail case to exit & revert the transaction chain
+;; Asserts: is best used when we want fail case to exit with an error or return a response
 ;; Day 14 - Condditionals I (Asserts)
 (define-read-only (show-asserts (num uint)) 
    (ok (asserts! (> num u2) (err u1)))
@@ -161,6 +161,7 @@
 
         ;; var-set new-name
         (var-set hello-name new-name)
+        
         ;; Say hello new-name
         (ok (concat "Hello, " (var-get hello-name)))   
     
