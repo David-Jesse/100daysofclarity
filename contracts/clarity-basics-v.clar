@@ -40,3 +40,31 @@
 (define-private (test-filter-remove-even (item uint)) 
     (not (is-eq (mod item u2) u0))
 )
+
+;; Day 47 - Map
+;; Map is best used when we want the length of the list unchanged 
+;; Iterates items through passed function, returns a sequence of exact same length
+(define-constant test-list-string (list "Dave" "Charles" "John" "Basil" "Alicia"))
+(define-read-only (test-map-increase-by-one) 
+    (map add-by-one test-list)
+)
+
+(define-read-only (test-map-double) 
+    (map map-double test-list)
+)
+
+(define-read-only (test-map-names) 
+    (map hello-name test-list-string)
+)
+
+(define-private (add-by-one (item uint)) 
+    (+ item u1)
+)
+
+(define-private (map-double (item uint)) 
+    (* item u2)
+)
+
+(define-private (hello-name (item (string-ascii 24))) 
+    (concat "Hello " item)
+)
