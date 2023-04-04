@@ -96,3 +96,32 @@
 (define-private (get-user (item {user: (string-ascii 24), balance: uint}))
     (get user item)
 )
+
+;; Day 49 - Fold
+(define-constant test-list-ones (list u1 u1 u1 u1 u1))
+(define-constant test-list-two (list u1 u2 u3 u4 u5))
+(define-constant test-alphabets (list "e" "s" "s" "e"))
+
+(define-read-only (fold-start-add-zero) 
+    (fold + test-list-ones u0)
+)
+
+(define-read-only (fold-add-start-ten) 
+    (fold + test-list-ones u10)
+)
+
+(define-read-only (fold-multiply-one) 
+    (fold * test-list-two u1)
+)
+
+(define-read-only (fold-multiply-two) 
+    (fold * test-list-two u2)
+)
+
+(define-read-only (fold-characters) 
+    (fold concat-string test-alphabets "J")
+)
+
+(define-private (concat-string (a (string-ascii 10)) (b (string-ascii 10)))
+     (unwrap-panic (as-max-len? (concat b a) u10))
+)
