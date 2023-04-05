@@ -44,6 +44,11 @@ epoch = 2.0
 path = 'contracts/offspring-will.clar'
 clarity_version = 1
 epoch = 2.0
+
+[contracts.sip-09]
+path = 'contracts/sip-09.clar'
+clarity_version = 1
+epoch = 2.0
 [repl.analysis]
 passes = []
 
