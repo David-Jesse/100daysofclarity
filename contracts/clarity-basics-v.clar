@@ -139,7 +139,8 @@
 (define-public (call-basics-ii-hello-world (name (string-ascii 26))) 
     (contract-call? .clarity-basics-ii set-and-say-hello name)
 )
-(define-public (call-basics-iii-set-second-map (new-username (string-ascii 24)) (new-balance uint)) 
+
+(define-public (call-basics-iii-set-second-map (new-username (string-ascii 24)) (new-balance uint))
 (begin 
     (try! (contract-call? .clarity-basics-ii set-and-say-hello new-username))
     (contract-call? .clarity-basics-iii set-second-map new-username new-balance none)
@@ -164,3 +165,75 @@
 (define-public (test-transfer (id uint) (sender principal) (recipient principal)) 
     (nft-transfer? nft-test id sender recipient)
 )
+
+;; Day 53 - Basic Minting Logic
+(define-non-fungible-token nft-test-2 uint)
+(define-data-var nft-index uint u1)
+(define-constant nft-limit u6)
+(define-constant nft-price u10000000)
+(define-constant nft-admin tx-sender)
+
+(define-public (free-limited-mint) 
+    (let  
+        (
+            (current-index (var-get nft-index))
+            (next-index (+ current-index u1))
+        )
+
+            ;; Assert that index < limit
+            (asserts! (< current-index nft-limit) (err "No more NFTs"))
+
+            ;; Charge 10 STX
+            (unwrap! (stx-transfer? nft-price tx-sender nft-admin) (err "stx-transfer"))
+
+            ;; Mint NFT to tx-sender
+            (unwrap! (nft-mint? nft-test-2 current-index tx-sender) (err "nft-mint"))
+
+            ;; Var-set NFT index increasing it by 1
+            (ok (var-set nft-index next-index))
+
+    )
+)
+
+;; ;; Day 54 - Basic NFT Metadata Logic
+;; (define-constant static-url "https://example.com/")
+;; (define-map nft-metadata uint (string-ascii 256))
+
+;; (define-public (get-token-uri-test (id uint)) 
+;;     (ok static-url)
+;; )
+
+;; (define-public (get-token-uri-1 (id uint)) 
+;;     (ok (concat 
+;;             static-url 
+;;             (concat (uint-to-ascii id) ".json")
+            
+;;     )
+;;     )
+;; )
+
+
+
+;; ;; @desc utility function that takes in a uint & returns a string
+;; ;; @params value; the uint we're casting into a string to concatenate
+;; ;; thanks to Setzeus for guidiance
+;; (define-read-only (uint-to-ascii (value uint)) 
+;;     (if (<= value u9) 
+;;         (unwrap-panic (element-at "0123456789" value))
+;;         (get r (fold uint-to-ascii-inner
+;;             0x00000000000000000000000000000000
+;;             {v: value, r: ""}
+;;         ))
+;;     )
+;; )
+
+;; (define-read-only (uint-to-ascii-inner (i (buff 1)) (d {v: uint, r: (string-ascii 39)})) 
+;;     (if (> (get v d) u0)
+;;         {
+;;             v: (/ (get v d) u10),
+;;             r: (unwrap-panic (as-max-len? (concat (unwrap-panic (element-at "0123456789" (mod (get v d)))))))
+;;         }
+;;         d 
+;;     )
+;; )
+
