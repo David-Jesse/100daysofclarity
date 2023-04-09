@@ -15,7 +15,3 @@
         (transfer (uint principal principal) (response bool uint))
     )
 )
-
-;; Day 51
-
-
