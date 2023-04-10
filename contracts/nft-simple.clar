@@ -1,3 +1,4 @@
+;; Day 55
 ;; NFT-simple
 ;; The most simple NFT
 ;; Written by David-Jesse
@@ -16,11 +17,16 @@
 ;; Collection Limit
 (define-constant collection-limit u100)
 
+;; Root URI
+(define-constant collection-root-uri "ipfs://ipfs/QmYcrELFT5c9pjSygFFXkbjfbMHB5cBoWJDGaTvrP/")
+
+;; NFT Price
+(define-constant simple-nft-price u100000000)
+
 ;; Collection index
 (define-data-var collection-index uint u1)
 
-;; Root URI
-(define-constant collection-root-uri "ipfs://ipfs/QmYcrELFT5c9pjSygFFXkbjfbMHB5cBoWJDGaTvrP/")
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; SIP-09 Functions ;;
@@ -58,7 +64,25 @@
 ;; Core Functions ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
+;; Core Minting function
+;; @desc: Core function for minting one nft-simple
+(define-public (mint) 
+    (let  
+        (
+            (current-index (var-get collection-index))
+            (next-index (+ current-index u1))
+        )
+            ;; Assert that current-index is lower than collection-limit
+            (asserts! (< current-index collection-limit)  (err "err-minted-out"))
 
+            ;; Charge tx-sender for simple NFT
+            (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
+
+            ;; Mint Simple NFT
+            (ok (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "err-minting")))
+
+    )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Functions;;;
