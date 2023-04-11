@@ -49,6 +49,8 @@
 )   
 
 ;; Day 58 - Non-custodial Functions
+;; Day 59 - Non custodial Functions contd.
+
 (define-map market uint {price: uint, owner: principal})
 (define-public (list-in-ustx (item uint) (price uint)) 
     (let   
@@ -69,8 +71,34 @@
 )
 
 (define-public (unlist-in-ustx (item uint)) 
-    (ok true) 
+    (let    
+        (
+            (current-listing (unwrap! (map-get? market item) (err "err-listing-doesnt-exist")))
+            (current-price (get price current-listing))
+            (current-owner (get owner current-listing))
+        )
+            ;; Assert that tx-sender is current owner
+            (asserts! (is-eq tx-sender current-owner) (err "err-not-owner"))
+
+            ;; Map delete existing listing
+            (ok (map-delete market item))
+    ) 
 )
 (define-public (buy-in-ustx (item uint)) 
-    (ok true)
+    (let    
+        (
+            (current-listing (unwrap! (map-get? market item) (err "err-listing-doesnt-exist")))
+            (current-price (get price current-listing))
+            (current-owner (get owner current-listing))
+        )
+
+            ;; Tx-sender buys by transfering STX
+            (unwrap! (stx-transfer? current-price tx-sender current-owner) (err "err-stx-transfer"))
+
+            ;; Transfer NFT to new owner
+            (unwrap! (nft-transfer? test-nft item current-owner tx-sender) (err "err-nft-transfer"))
+
+            ;; Map-delete listing
+            (ok (map-delete market item))
+    )
 )
