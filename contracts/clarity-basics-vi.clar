@@ -26,7 +26,7 @@
 
             ;; Mint NFT
             (unwrap! (nft-mint? test-nft current-index tx-sender) (err "err-minting"))
-
+            
             ;; Update allocated whitelist mints
             (map-set whitelist-map tx-sender (- current-whitelist-mint u1))
 
@@ -47,3 +47,30 @@
         (ok (map-set whitelist-map whitelist-address mints-allocated))
     )
 )   
+
+;; Day 58 - Non-custodial Functions
+(define-map market uint {price: uint, owner: principal})
+(define-public (list-in-ustx (item uint) (price uint)) 
+    (let   
+        (
+            (nft-owner (unwrap! (nft-get-owner? test-nft item) (err "err-nft-doesnt-exist")))
+        )
+            ;; Assert that tx-sender is-eq to NFT owner
+            (asserts! (is-eq tx-sender nft-owner) (err "err-not-owner"))
+
+            ;; Map-set market with new NFT
+            (ok (map-set market item {price: price, owner: tx-sender}))
+        
+    ) 
+)
+
+(define-read-only (get-list-in-ustx (item uint)) 
+    (map-get? market item)
+)
+
+(define-public (unlist-in-ustx (item uint)) 
+    (ok true) 
+)
+(define-public (buy-in-ustx (item uint)) 
+    (ok true)
+)
