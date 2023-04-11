@@ -79,7 +79,10 @@
             (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
 
             ;; Mint Simple NFT
-            (ok (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "err-minting")))
+             (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "err-minting"))
+
+             ;; Var-set collection index to next index
+             (ok (var-set collection-index next-index))
 
     )
 )
