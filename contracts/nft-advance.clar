@@ -29,6 +29,9 @@
 ;; NFT Price
 (define-constant simple-nft-price u100000000)
 
+;; Admin Deployer
+(define-constant deployer tx-sender)
+
 ;; Collection index
 (define-data-var collection-index uint u1)
 
@@ -42,7 +45,7 @@
 })
 
 ;; Whitelist map
-(define-map whitelistmap principal uint)
+(define-map whitelist-map principal uint)
 
 ;; Day 61
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -146,19 +149,59 @@
     (map-get? market item)
 )
 
-
+;; Day 62
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Minting Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Mint one
+(define-public (mint-one) 
+    (let    
+        (
+            (current-index (var-get collection-index))
+            (next-index (+ current-index u1))
+            (whitelist-mints (unwrap! (map-get? whitelist-map tx-sender) (err "err-not-whitelisted")))
+        )
 
+            ;; Assert that collection is not minted out (collection index < collection limit)
+            (asserts! (< current-index collection-limit) (err "err-minted-out"))
+
+            ;; Assert that user has mints left (whitelist-mints > 0)
+            (asserts! (> whitelist-mints u0) (err "err-no-whitelist-mints-left"))
+
+            ;; STX transfer / pay for the mint
+            (unwrap! (stx-transfer? simple-nft-price tx-sender deployer) (err "err-stx-transfer"))
+
+            ;; Mint NFT to tx-sender
+            (unwrap! (nft-mint? advance-nft current-index tx-sender) (err "err-minting-nft"))
+
+            ;; Var-set collection-index to current-index
+            (var-set collection-index current-index)
+
+            ;; Map-set whitelist-mints to whitelist-mints - 1
+            (ok (map-set whitelist-map tx-sender (- whitelist-mints u1)))
+        
+    )
+)
 
 ;; Mint two
-
+(define-public (mint-two) 
+    (begin     
+        (unwrap! (mint-one) (err "err-mint-1"))
+        (ok (unwrap! (mint-one) (err "err-mint-2")))
+    )
+)   
 
 ;; Mint five
-
+(define-public (mint-five) 
+    (begin        
+        (unwrap! (mint-one) (err "err-mint-1"))
+        (unwrap! (mint-one) (err "err-mint-2"))
+        (unwrap! (mint-one) (err "err-mint-3"))
+        (unwrap! (mint-one) (err "err-mint-4"))
+        (ok (unwrap! (mint-one) (err "err-mint-5")))
+    )
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
