@@ -1,5 +1,6 @@
+;; Day 60
 ;; NFT Advance
-;; An advanced NFt that has all modern functions required for a high-quality NFT project
+;; An advanced NFT that has all modern functions required for a high-quality NFT project
 ;; Written by David-Jesse
 
 ;; Unique Properties & Features
@@ -43,39 +44,107 @@
 ;; Whitelist map
 (define-map whitelistmap principal uint)
 
+;; Day 61
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; SIP-09 Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Get last token id
+(define-public (get-last-token-id) 
+    (ok (var-get collection-index))
+)
 
 
 ;; Get token URI
-
+(define-public (get-token-uri (id uint))
+    (ok ( some (concat 
+        collection-root-uri
+        (concat (uint-to-ascii id) 
+        ".json"
+        ))
+     ))
+)
 
 ;; Transfer Token
-
+(define-public (transfer (id uint) (sender principal) (recipient principal)) 
+   (begin 
+        (asserts! (is-eq tx-sender sender) (err u1))
+        (if (is-some (map-get? market id))
+            (map-delete market id)
+            false
+        )
+        (nft-transfer? advance-nft id sender recipient)
+   )
+)
 
 ;; Get Owner
-
-
-
+(define-public (get-owner (id uint)) 
+    (ok (nft-get-owner? advance-nft id))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Noncustodial Functions ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; List in ustx
+(define-public (list-in-ustx (item uint) (price uint)) 
+    (let    
+        (
+            (nft-owner (unwrap! (nft-get-owner? advance-nft item) (err "err-nft-doesnt-exist")))
 
+        )
+            ;; Assert that tx-sender is nft owner
+            (asserts! (is-eq nft-owner tx-sender) (err "err-not-owner"))
+
+            ;; Map-set & update market
+            (ok (map-set market item {
+                owner: tx-sender,
+                price: price 
+            }))
+    )
+)
 
 ;; Unlist in ustx
+(define-public (unlist-in-ustx (item uint)) 
+    (let    
+        (
+            (current-listing (unwrap! (map-get? market item) (err "err-not-listed")))
+            (current-price (get price current-listing))
+            (current-owner (get owner current-listing))
+        )
 
+            ;; Assert that tx-sender is-eq current owner
+            (asserts! (is-eq tx-sender current-owner) (err "err-not-owner"))
+
+            ;; Delete the listing
+            (ok (map-delete market item))
+    )
+)
 
 ;; Buy in ustx
+(define-public (buy-in-ustx (item uint)) 
+    (let    
+        (
+            (current-listing (unwrap! (map-get? market item) (err "err-not-listed")))
+            (current-price (get price current-listing))
+            (current-owner (get owner current-listing))
+        )
+            ;; Send STX to start purchase
+            (unwrap! (stx-transfer? current-price tx-sender current-owner) (err "err-sending-stx"))
 
+            ;; Send NFT to purchaser
+            (unwrap! (nft-transfer? advance-nft item current-owner tx-sender) (err "err-nft-transfer"))
+
+            ;; Delete listing
+            (ok (map-delete market item))
+            
+    )
+)
 
 ;; Check Listing
-
+(define-read-only (check-listing (item uint)) 
+    (map-get? market item)
+)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;
