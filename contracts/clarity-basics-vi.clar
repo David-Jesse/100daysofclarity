@@ -102,3 +102,17 @@
             (ok (map-delete market item))
     )
 )
+
+;; Day 66 - Use-traits To Make Dynamic Contract Calls
+
+(use-trait nft .sip-09.nft-trait)
+
+;; Get Last id
+(define-public (get-last-id (nft-principal <nft>))
+    (contract-call? nft-principal get-last-token-id)
+)
+
+;; Get Owner
+(define-public (get-owner (nft-principal <nft>) (item uint)) 
+    (contract-call? nft-principal get-owner item)
+)

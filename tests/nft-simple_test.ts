@@ -29,7 +29,7 @@ Clarinet.test({
 
 
 Clarinet.test({
-    name: "Ensure that STX balance ",
+    name: "Ensure that the right amount of STX (nft price) is transferred by checking balance ",
     async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
         let deployer = accounts.get("deployer")!;
         let wallet_1 = accounts.get("wallet_1")!;
@@ -42,13 +42,7 @@ Clarinet.test({
         
         console.log(block.receipts[0].eevents)
         
-        block.receipts[0].events.expectNonFungibleTokenMintEvent(
-             types.uint(1),
-             wallet_1.address,
-             deployer.address   
-            `${deployer.address}.nft-simple`,
-            "simple-nft"
-        )
+        assertEquals(chain.getAssertMaps().assets['STX'] [wallet_1_address], 99999990000000)
 
     }
 })
