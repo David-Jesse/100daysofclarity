@@ -212,12 +212,12 @@
 (define-public (whitelist-principal (user principal) (mints uint)) 
     (let    
         (
-             (whitelist-mints  (map-get? whitelist-map user))
+             (whitelist-mints (map-get? whitelist-map user))
         )
             ;; Assert that tx-sender is an admin
             (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-admin"))
 
-            ;; Assert that whitelist-mints logic is-none
+            ;; Assert that whitelist-mints is-none
             (asserts! (is-none whitelist-mints) (err "err-user-already-whitelisted"))
 
             ;; Map set the whitelist-map
@@ -275,3 +275,4 @@
         d
     )
 )
+
