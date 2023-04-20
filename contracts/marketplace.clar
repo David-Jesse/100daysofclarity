@@ -44,7 +44,7 @@
 
 ;; Item status
 (define-map item-status {collection: principal, item: uint} {
-    name: principal,
+    owner: principal,
     price: uint
 })
 
@@ -78,21 +78,36 @@
 (define-public (buy-item (nft-collection <nft>) (nft-item uint)) 
     (let    
         (
-            (okay true) 
+            (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "err-not-whitelisted")))
+            (current-royalty-percent (get royalty-percent current-collection))
+            (current-royalty-address (get royalty-address current-collection))
+            (current-listing (unwrap! (map-get? item-status {collection: (contract-of nft-collection), item: nft-item}) (err "err-item-not-listed")))
+            (current-collection-listings (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-no-collection-listings")))
+            (current-listing-price (get price current-listing))
+            (current-listing-royalty (/ (* current-listing-price current-royalty-percent) u100))
+            (current-listing-owner (get owner current-listing))
         )   
-            ;; Assert that NFT collection is whitelisted
-
             ;; Assert that item is listed
+            (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-listed"))
 
-            ;; Assert tx-sender is NOT owner
+            ;; Assert that tx-sender is not owner
+            (asserts! (not (is-eq tx-sender current-listing-owner)) (err "err-buyer-is-owner"))
 
-            ;; Send STX (price - royalty) to owner
+            ;; Send STX (price) to owner
+            (unwrap! (stx-transfer? current-listing-price tx-sender current-listing-owner) (err "err-stx-transfer"))
 
-            ;; Send STX royalty to artist/royalty-address
+            ;; Send STX (royalty) to artist/royalty-address   
+            (unwrap! (stx-transfer? current-listing-royalty  tx-sender current-royalty-address) (err "err-stx-transfer-royalty-fees"))
 
             ;; Transfer NFT from custodial/contract to buyer/NFT
+            (unwrap! (contract-call? nft-collection transfer nft-item (as-contract tx-sender) tx-sender) (err "err-nft-transfer"))
 
             ;; Map-delete item-listing
+            (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
+
+            ;; Filter out nft-item from collection-listing
+            
+
 
 
             (ok 1)
@@ -274,7 +289,7 @@
 
             ;; Filter-set remove admin
 
-            
+
             (ok 1)
     )
 )
