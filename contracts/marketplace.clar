@@ -181,18 +181,32 @@
 (define-public (change-price (nft-collection <nft>) (nft-item uint) (nft-price uint)) 
     (let        
         (
-            
+            (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "err-not-whitelisted")))
+            (current-royalty-percent (get royalty-percent current-collection))
+            (current-royalty-address (get royalty-address current-collection))
+            (current-listing (unwrap! (map-get? item-status {collection: (contract-of nft-collection), item: nft-item}) (err "err-item-not-listed")))
+            (current-collection-listings (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-no-collection-listings")))
+            (current-listing-price (get price current-listing))
+            (current-listing-royalty (/ (* current-listing-price current-royalty-percent) u100))
+            (current-listing-owner (get owner current-listing))
+            (current-nft-owner (unwrap! (contract-call? nft-collection  get-owner nft-item) (err "err-get-owner")))
         )
             ;; Assert nft-item is in collection-listing
-
-            ;; Assert nft-item item-status map-get is-some
+            (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-listed"))
 
             ;; Assert nft current owner is contract
+            (asserts! (is-eq (some (as-contract tx-sender)) current-nft-owner) (err "err-contract-not-owner"))    
 
             ;; Assert that tx-sender is owner from item-status tuple
+            (asserts! (is-eq tx-sender current-listing-owner) (err "err-not-listed-owner"))
 
             ;; Map-set merge item-status with new price
-
+            (map-set item-status {collection: (contract-of nft-collection), item: nft-item}
+                (merge 
+                    current-listing
+                    {price: nft-price}
+                )
+            )
 
             (ok 1)
     )
