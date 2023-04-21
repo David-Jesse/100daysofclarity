@@ -3,7 +3,7 @@
 ;;  Written by David-Jesse
 ;; Day 51 - Introduction to Traits & SIP-09 (NFTs)
 
-(define-trait nft-trait
+(define-trait nft-trait 
     (
         ;; last token ID
         (get-last-token-id () (response uint uint))

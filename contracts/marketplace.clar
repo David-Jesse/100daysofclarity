@@ -32,6 +32,7 @@
 ;; i. Is-none -> collection not submitted
 ;; ii. False -> Collection has not been approved by admin
 ;; iii. True -> collection has been approved by admin
+
 (define-map collection principal {
     name: (string-ascii 64),
     royalty-percent: uint,
@@ -48,6 +49,8 @@
     price: uint
 })
 
+;; Helper uint
+(define-data-var helper-uint uint u0)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;;;
@@ -74,7 +77,7 @@
 
 ;; Buy Item
 ;; @desc -  functions that allows principal to purchase a listed NFT
-;; @param - nft-collecion: nft-trait, nft-item: uint
+;; @param - nft-collection: nft-trait, nft-item: uint
 (define-public (buy-item (nft-collection <nft>) (nft-item uint)) 
     (let    
         (
@@ -106,15 +109,13 @@
             (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
 
             ;; Filter out nft-item from collection-listing
-            
+            ;; (filter remove-uint collection-listing)
+            (var-set helper-uint nft-item)
 
+            (ok (map-set collection-listing (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
 
-
-            (ok 1)
     )
 )
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -128,28 +129,32 @@
 (define-public (list-item (nft-collection <nft>) (nft-item uint) (nft-price uint)) 
     (let        
         (
-            (ok 1)
+            (current-nft-owner (unwrap! (contract-call? nft-collection get-owner nft-item) (err "err-get-owner")))
+            (current-collection-listing (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-no-collection-listing")))
         )
             ;; Assert that tx-sender is current NFT owner
+            (asserts! (is-eq (some tx-sender) current-nft-owner) (err "err-nft-not-owner"))
 
             ;; Assert that collection is whitelisted
-
-            ;; Assert nft-item is not in collection listing
+            (asserts! (is-some (map-get? collection (contract-of nft-collection))) (err "err-collection-not-whitelisted"))
 
             ;; Assert that item-staus is none
+            (asserts! (is-none (map-get? item-status { collection: (contract-of nft-collection), item: nft-item})) (err "err-item-already-listed"))
 
             ;; Transfer NFT from tx-sender to contraxt
+            (unwrap! (contract-call? nft-collection transfer nft-item tx-sender (as-contract tx-sender)) (err "err-nft-transfer"))
 
             ;; Map-set item-status with new price & owner (tx-sender)
+            (map-set item-status {collection: (contract-of nft-collection), item: nft-item} 
+                {
+                    owner: tx-sender,
+                    price: nft-item
+                }
+            )
 
             ;; Map-set item collection-listing
-
-
-
-
-            (ok 1)
+            (ok (map-set collection-listing (contract-of nft-collection) (unwrap! (as-max-len? (append current-collection-listing nft-item) u10000) (err "err-collection-item-overflow"))))
     )
-
 )
 
 ;; Unlist item
@@ -189,7 +194,7 @@
             (current-listing-price (get price current-listing))
             (current-listing-royalty (/ (* current-listing-price current-royalty-percent) u100))
             (current-listing-owner (get owner current-listing))
-            (current-nft-owner (unwrap! (contract-call? nft-collection  get-owner nft-item) (err "err-get-owner")))
+            (current-nft-owner (unwrap! (contract-call? nft-collection get-owner nft-item) (err "err-get-owner")))
         )
             ;; Assert nft-item is in collection-listing
             (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-listed"))
@@ -201,14 +206,12 @@
             (asserts! (is-eq tx-sender current-listing-owner) (err "err-not-listed-owner"))
 
             ;; Map-set merge item-status with new price
-            (map-set item-status {collection: (contract-of nft-collection), item: nft-item}
+            (ok (map-set item-status {collection: (contract-of nft-collection), item: nft-item}
                 (merge 
                     current-listing
                     {price: nft-price}
                 )
-            )
-
-            (ok 1)
+            ))
     )
 )
 
@@ -224,9 +227,11 @@
             
         )
 
-            ;; Assert that collection is not already whitelisted by makin sure it's is-none
+            ;; Assert that collection is not already whitelisted by making sure it's is-none
+
 
             ;; Assert that tx-sender is deployer of nft parameter
+
 
             ;; Map-set whitelisted-collections to false
 
@@ -235,7 +240,6 @@
 )
 
 ;; Change royalty address
-
 (define-public (change-royalty-address (nft-collecion principal) (new-royalty principal))
     (let      
         (
@@ -268,7 +272,7 @@
             ;; Map-set nft-collection with whitelisted
 
 
-            (ok true )
+            (ok 1)
     )
 )
 
@@ -290,6 +294,7 @@
 )
 
 ;; Remove admin
+
 (define-public (remove-admin (admin principal)) 
     (let       
         (
@@ -306,4 +311,14 @@
 
             (ok 1)
     )
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Helper Function;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+;; Filter uint from list
+(define-private (remove-uint-from-list (helper-item uint)) 
+    (not (is-eq helper-item (var-get helper-uint)))
 )
