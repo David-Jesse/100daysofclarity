@@ -52,7 +52,7 @@
 (define-data-var helper-uint uint u0)
 
 ;; Helper principal
-(define-data-var helper-principal principal tx-sender)
+(define-data-var helper-principal principal (as-contract tx-sender))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;;;
@@ -114,7 +114,7 @@
             (var-set helper-uint nft-item)
 
             ;; (filter remove-uint collection-listing)
-            (ok (map-set current-collection-listings (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
+            (ok (map-set collection-listing (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
     )
 )
 
@@ -259,7 +259,7 @@
 (define-public (change-royalty-address (nft-collection principal) (new-royalty principal))
     (let      
         (
-            (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "err-not-whitelisted")))
+            (current-collection (unwrap! (map-get? collection nft-collection) (err "err-not-whitelisted")))
             (current-royalty-address (get royalty-address current-collection))
         )
     
@@ -318,8 +318,8 @@
             (asserts! (is-none (index-of? (var-get admins) new-admin)) (err "err-already-admin"))
 
             ;; Var-set admins by appending new-admin
-            (ok (var-set current-admin new-admin))
-            
+            (ok (append current-admin new-admin))
+        
     )
 )
 
@@ -334,7 +334,7 @@
             (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-admin"))
 
             ;; Assert that remove admin exists
-            (asserts! (is-some (index-of (var-get admins) remove-admin)) (err "err-admin-does-not-exist"))
+            (asserts! (is-some (index-of (var-get admins) admin)) (err "err-admin-does-not-exist"))
 
             ;; Var-set helper principal
             (var-set helper-principal admin)
