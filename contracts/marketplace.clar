@@ -16,7 +16,6 @@
 ;; STX/NFT is transfered
 ;; Listings are deleted
 
-
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Cons, Vars, Maps ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -51,6 +50,9 @@
 
 ;; Helper uint
 (define-data-var helper-uint uint u0)
+
+;; Helper principal
+(define-data-var helper-principal principal tx-sender)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;;;
@@ -109,11 +111,10 @@
             (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
 
             ;; Filter out nft-item from collection-listing
-            ;; (filter remove-uint collection-listing)
             (var-set helper-uint nft-item)
 
-            (ok (map-set collection-listing (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
-
+            ;; (filter remove-uint collection-listing)
+            (ok (map-set current-collection-listings (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
     )
 )
 
@@ -176,20 +177,23 @@
             ;; Assert that current NFT owner is contract
             (asserts! (is-eq (some (as-contract tx-sender)) current-nft-owner) (err "err-contract-not-owner"))    
 
-            ;; Assert that item-status is-some
-            
-            ;; Assert that owner property from item-status tuple is tx-sender
+            ;; Assert that tx-sender is-eq current-listing-owner
+            (asserts! (is-eq tx-sender current-listing-owner) (err "err-not-listed-owner"))
 
             ;; Assert that uint is in collection-listing map
+            (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-in-listings"))
 
             ;; Transfer NFT back from contract to tx-sender/original owner
-
-            ;; Map-set collection-listing (remove uint)
+            (unwrap! (contract-call? nft-collection transfer nft-item (as-contract tx-sender) tx-sender) (err "err-returning-nft"))
 
             ;; Map-set item-status (delete entry)
+            (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
 
+            ;; Filter out nft-item from collection-listing
+            ;; (filter remove-uint collection-listing)
+            (var-set helper-uint nft-item)
 
-            (ok 1)
+            (ok (map-set collection-listing (contract-of nft-collection) (filter remove-uint-from-list current-collection-listings)))
     )
 )
 
@@ -233,36 +237,42 @@
 
 ;; Submit collection
 (define-public (submit-collection (nft-collection <nft>) (royalty-percent uint) (collection-name (string-ascii 64))) 
-    (let         
-        (
-            
-        )
+    (begin          
+        
+            ;; Assert that both collection & collection-listings is-none
+            (asserts! (and (is-none (map-get? collection (contract-of nft-collection))) (is-none (map-get? collection-listing (contract-of nft-collection)))) (err "err-collection-already-listed"))
 
-            ;; Assert that collection is not already whitelisted by making sure it's is-none
-
-
-            ;; Assert that tx-sender is deployer of nft parameter
-
+            ;; Assert royalty is greater than u1 & lower than u20
+            (asserts! (and (< royalty-percent u21) (> royalty-percent u0)) (err "err-bad-royalty"))
 
             ;; Map-set whitelisted-collections to false
-
-            (ok 1)
+            (ok (map-set collection (contract-of nft-collection) {
+                name: collection-name,
+                royalty-percent: royalty-percent,
+                royalty-address: tx-sender,
+                whitelisted: false 
+            }))    
     )
 )
 
 ;; Change royalty address
-(define-public (change-royalty-address (nft-collecion principal) (new-royalty principal))
+(define-public (change-royalty-address (nft-collection principal) (new-royalty principal))
     (let      
         (
-            
+            (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "err-not-whitelisted")))
+            (current-royalty-address (get royalty-address current-collection))
         )
-            ;; Assert that collection is whitelisted
-
+    
             ;; Assert that tx-sender is current royalty-address
+            (asserts! (is-eq current-royalty-address tx-sender) (err "err-not-current-royalty-address"))
 
             ;; Map-set / Merge exisiting collection tuple w/ new royalty-address
-
-            (ok 1)
+            (ok (map-set collection nft-collection 
+                    (merge 
+                        current-collection
+                        {royalty-address: new-royalty}
+                    )
+            ))
     )
 )
 
@@ -274,16 +284,24 @@
 (define-public (whitelisting-approval (nft-collection principal)) 
     (let         
         (
-
+             (current-collection (unwrap! (map-get? collection nft-collection) (err "err-not-whitelisted")))
         )
-            ;; Assert that whitelisting exists / is-some
 
             ;; Asserts that tx-sender is an admin
-            
+            (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-an-admin"))   
+
             ;; Map-set nft-collection with whitelisted
+            (map-set collection nft-collection 
+                (merge
+                    current-collection
+                    {whitelisted: true}  
+                )
+            )
 
+            ;; Map-set collection-listings
+            (ok (map-set collection-listing nft-collection (list )))
 
-            (ok 1)
+        
     )
 )
 
@@ -291,16 +309,17 @@
 (define-public (add-admin (new-admin principal)) 
     (let      
         (
-
+            (current-admin (var-get admins))
         )
             ;; Assert that tx-sender is an admin
+            (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-admin"))
 
             ;; Assert that new-admin is not already admin
+            (asserts! (is-none (index-of? (var-get admins) new-admin)) (err "err-already-admin"))
 
             ;; Var-set admins by appending new-admin
-
-
-            (ok 1)
+            (ok (var-set current-admin new-admin))
+            
     )
 )
 
@@ -309,18 +328,20 @@
 (define-public (remove-admin (admin principal)) 
     (let       
         (
-
+            (current-admin (var-get admins))
         )
             ;; Assert that tx-sender is admin
+            (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-admin"))
 
             ;; Assert that remove admin exists
+            (asserts! (is-some (index-of (var-get admins) remove-admin)) (err "err-admin-does-not-exist"))
 
             ;; Var-set helper principal
+            (var-set helper-principal admin)
 
             ;; Filter-set remove admin
+            (ok (filter remove-principal-from-list current-admin))
 
-
-            (ok 1)
     )
 )
 
@@ -333,3 +354,8 @@
 (define-private (remove-uint-from-list (helper-item uint)) 
     (not (is-eq helper-item (var-get helper-uint)))
 )
+
+(define-private (remove-principal-from-list (helper-remover principal)) 
+    (not (is-eq helper-remover (var-get helper-principal)))
+)
+
