@@ -244,7 +244,7 @@
              (asserts! (is-some (index-of? (var-get admins) tx-sender)) (err "err-not-admin"))
 
             ;; Assert that new-admin is not already an admin
-             (asserts! (not (is-some (index-of? (var-get admins) new-admin))) (err "err-already-admin"))
+             (asserts! (is-none (index-of? (var-get admins) new-admin)) (err "err-already-admin"))
 
             ;;  Var-set admins by appending new-admin
             (ok (var-set admins (unwrap! (as-max-len? (append current-admin new-admin) u10) (err "err-admin-overflow"))))       

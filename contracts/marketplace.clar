@@ -52,7 +52,7 @@
 (define-data-var helper-uint uint u0)
 
 ;; Helper principal
-(define-data-var helper-principal principal (as-contract tx-sender))
+(define-data-var helper-principal principal tx-sender)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;;;
@@ -141,10 +141,10 @@
             ;; Assert that collection is whitelisted
             (asserts! current-collection-whitelist (err "err-collection-not-whitelisted"))
 
-            ;; Assert that item-staus is none
-            (asserts! (is-none (map-get? item-status { collection: (contract-of nft-collection), item: nft-item})) (err "err-item-already-listed"))
+            ;; Assert that item-status is none
+            (asserts! (is-none (map-get? item-status {collection: (contract-of nft-collection), item: nft-item})) (err "err-item-already-listed"))
 
-            ;; Transfer NFT from tx-sender to contraxt
+            ;; Transfer NFT from tx-sender to contract
             (unwrap! (contract-call? nft-collection transfer nft-item tx-sender (as-contract tx-sender)) (err "err-nft-transfer"))
 
             ;; Map-set item-status with new price & owner (tx-sender)
@@ -243,7 +243,7 @@
             (asserts! (and (is-none (map-get? collection (contract-of nft-collection))) (is-none (map-get? collection-listing (contract-of nft-collection)))) (err "err-collection-already-listed"))
 
             ;; Assert royalty is greater than u1 & lower than u20
-            (asserts! (and (< royalty-percent u21) (> royalty-percent u0)) (err "err-bad-royalty"))
+            (asserts! (and (< royalty-percent u21) (> royalty-percent u0)) (err "err-bad-royalty-commision"))
 
             ;; Map-set whitelisted-collections to false
             (ok (map-set collection (contract-of nft-collection) {
@@ -318,13 +318,11 @@
             (asserts! (is-none (index-of? (var-get admins) new-admin)) (err "err-already-admin"))
 
             ;; Var-set admins by appending new-admin
-            (ok (append current-admin new-admin))
-        
+            (ok (var-set admins (unwrap! (as-max-len? (append current-admin new-admin) u20) (err "err-admin-overflow"))))
     )
 )
 
 ;; Remove admin
-
 (define-public (remove-admin (admin principal)) 
     (let       
         (
@@ -359,3 +357,12 @@
     (not (is-eq helper-remover (var-get helper-principal)))
 )
 
+
+;; Things we'll test manually
+;; 1. Artist submits a collection
+    ;; Submit single NFT
+;; 2. Admin apporves whitelists collection
+;; 3. User mints NFT
+;; 4. User lists NFT
+;; 5.1 User buys NFT
+;; 5.2 User unlists NFT
