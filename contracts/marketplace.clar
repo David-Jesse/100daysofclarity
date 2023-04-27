@@ -89,8 +89,9 @@
             (current-listing (unwrap! (map-get? item-status {collection: (contract-of nft-collection), item: nft-item}) (err "err-item-not-listed")))
             (current-collection-listings (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-no-collection-listings")))
             (current-listing-price (get price current-listing))
-            (current-listing-royalty (/ (* current-listing-price current-royalty-percent) u100))
+            (current-listing-royalty (* current-listing-price current-royalty-percent))
             (current-listing-owner (get owner current-listing))
+            (current-tx-sender tx-sender)
         )   
             ;; Assert that item is listed
             (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-listed"))
@@ -105,7 +106,7 @@
             (unwrap! (stx-transfer? current-listing-royalty  tx-sender current-royalty-address) (err "err-stx-transfer-royalty-fees"))
 
             ;; Transfer NFT from custodial/contract to buyer/NFT
-            (unwrap! (contract-call? nft-collection transfer nft-item (as-contract tx-sender) tx-sender) (err "err-nft-transfer"))
+            (unwrap! (as-contract (contract-call? nft-collection transfer nft-item tx-sender current-tx-sender)) (err "err-nft-transfer"))
 
             ;; Map-delete item-listing
             (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
@@ -134,6 +135,7 @@
             (current-collection-listing (unwrap! (map-get? collection-listing (contract-of nft-collection)) (err "err-no-collection-listing")))
             (current-collection (unwrap! (map-get? collection (contract-of nft-collection)) (err "err-not-whitelisted")))
             (current-collection-whitelist (get whitelisted current-collection))
+            (current-tx-sender tx-sender)
         )
             ;; Assert that tx-sender is current NFT owner
             (asserts! (is-eq (some tx-sender) current-nft-owner) (err "err-nft-not-owner"))
@@ -145,7 +147,7 @@
             (asserts! (is-none (map-get? item-status {collection: (contract-of nft-collection), item: nft-item})) (err "err-item-already-listed"))
 
             ;; Transfer NFT from tx-sender to contract
-            (unwrap! (contract-call? nft-collection transfer nft-item tx-sender (as-contract tx-sender)) (err "err-nft-transfer"))
+            (unwrap! (contract-call? nft-collection transfer nft-item current-tx-sender (as-contract tx-sender)) (err "err-nft-transfer"))
 
             ;; Map-set item-status with new price & owner (tx-sender)
             (map-set item-status {collection: (contract-of nft-collection), item: nft-item} 
@@ -173,6 +175,7 @@
             (current-listing-royalty (/ (* current-listing-price current-royalty-percent) u100))
             (current-listing-owner (get owner current-listing))   
             (current-nft-owner (unwrap! (contract-call? nft-collection get-owner nft-item) (err "err-get-owner")))
+            (current-tx-sender tx-sender)
         )
             ;; Assert that current NFT owner is contract
             (asserts! (is-eq (some (as-contract tx-sender)) current-nft-owner) (err "err-contract-not-owner"))    
@@ -184,7 +187,7 @@
             (asserts! (is-some (index-of? current-collection-listings nft-item)) (err "err-item-not-in-listings"))
 
             ;; Transfer NFT back from contract to tx-sender/original owner
-            (unwrap! (contract-call? nft-collection transfer nft-item (as-contract tx-sender) tx-sender) (err "err-returning-nft"))
+            (unwrap! (as-contract (contract-call? nft-collection transfer nft-item  current-tx-sender tx-sender)) (err "err-returning-nft"))
 
             ;; Map-set item-status (delete entry)
             (map-delete item-status {collection: (contract-of nft-collection), item: nft-item})
