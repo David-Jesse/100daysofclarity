@@ -12,7 +12,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Define Fungible Token
-(define-fungible-token clarity-token u1)
+(define-fungible-token clarity-token u100)
 
 ;; Human-readable name
 (define-constant name "ClarityToken")

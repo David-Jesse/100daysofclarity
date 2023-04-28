@@ -23,3 +23,28 @@ Clarinet.test({
         )
     }
 })
+
+
+Clarinet.test({
+    name: "Ensure that the same principal cannot claim twice",
+    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+        let deployer = accounts.get("deployer")!;
+
+        let block0 = chain.mineBlock([
+            Tx.contractCall("simple-ft", "claim-ct", [], deployer.address)
+        ])
+
+        console.log(block0.receipts[0].events)
+
+        chain.mineEmptyBlock(1)
+
+        let  block2 = chain.mineBlock([
+            Tx.contractCall("simple-ft", "claim-ct", [], deployer.address)
+        ])
+
+        console.log(block2.receipts[0].events)
+
+        block2.receipts[0].result.expectOk()
+        
+    }
+})
