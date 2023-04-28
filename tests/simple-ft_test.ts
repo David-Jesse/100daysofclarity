@@ -1,26 +1,25 @@
-
-import { Clarinet, Tx, Chain, Account, types } from 'https://deno.land/x/clarinet@v1.5.4/index.ts';
+import { Clarinet, Tx, Chain, Account, Contract, types } from 'https://deno.land/x/clarinet@v1.5.4/index.ts';
 import { assertEquals } from 'https://deno.land/std@0.170.0/testing/asserts.ts';
 
+// Two tests
+// 1. Can mint onf FT
+// 2. Cannot mint another
+
 Clarinet.test({
-    name: "Ensure that <...>",
-    async fn(chain: Chain, accounts: Map<string, Account>) {
-        // arrange: set up the chain, state, and other required elements
-        let wallet_1 = accounts.get("wallet_1")!;
+    name: "Ensure that exactly 1 CT is transferred on mint",
+    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+        let deployer = accounts.get("deployer")!;
 
-        // act: perform actions related to the current test
         let block = chain.mineBlock([
-            /*
-             * Add transactions with:
-             * Tx.contractCall(...)
-            */
-        ]);
+            Tx.contractCall("simple-ft", "claim-ct", [], deployer.address)
+        ])
 
-        // assert: review returned data, contract state, and other requirements
-        assertEquals(block.receipts.length, 0);
-        assertEquals(block.height, 2);
+        console.log(block.receipts[0].events)
 
-        // TODO
-        assertEquals("TODO", "a complete test");
-    },
-});
+        block.receipts[0].events.expectFungibleTokenMintEvent(
+            1,
+            deployer.address,
+            "clarity-token"
+        )
+    }
+})
