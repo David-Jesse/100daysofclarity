@@ -65,6 +65,11 @@ path = 'contracts/offspring-will.clar'
 clarity_version = 1
 epoch = 2.0
 
+[contracts.simple-ft]
+path = 'contracts/simple-ft.clar'
+clarity_version = 2
+epoch = 2.1
+
 [contracts.sip-09]
 path = 'contracts/sip-09.clar'
 clarity_version = 1
