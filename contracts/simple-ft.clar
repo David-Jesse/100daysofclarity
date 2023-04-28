@@ -75,7 +75,7 @@
     (ok (ft-get-supply clarity-token))
 )
 
-
+;; Day 78
 ;;;;;;;;;;
 ;; Mint ;;
 ;;;;;;;;;;
