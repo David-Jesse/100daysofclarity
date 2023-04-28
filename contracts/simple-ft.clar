@@ -12,7 +12,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Define Fungible Token
-(define-fungible-token clarity-token u100)
+(define-fungible-token clarity-token u1)
 
 ;; Human-readable name
 (define-constant name "ClarityToken")
@@ -22,6 +22,19 @@
 
 ;; Token decimals
 (define-constant decimals u0)
+
+;; Claim Map
+(define-map can-claim principal bool)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Read-Only Functions ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Can claim
+(define-read-only (get-claim-status (wallet principal)) 
+    (default-to true (map-get? can-claim wallet))
+)
 
 ;;;;;;;;;;;;
 ;; SIP-10 ;;
@@ -63,7 +76,23 @@
 )
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Read-Only Functions ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;
+;; Mint ;;
+;;;;;;;;;;
+
+(define-public (claim-ct) 
+    (let       
+        (
+            (current-claim-status (get-claim-status tx-sender))
+        )
+            ;; Assert that current-claim-status is true
+            (asserts! current-claim-status (err "err-already-claimed"))
+
+            ;; Mint 1 CT to tx-sender
+            (unwrap! (ft-mint? clarity-token u1 tx-sender) (err "err-mint-ft"))
+
+            ;; Chabge claim-status for tx-sender to false
+            (ok (map-set can-claim tx-sender false))
+    )
+)
 
