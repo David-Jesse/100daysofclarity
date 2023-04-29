@@ -91,7 +91,7 @@
             ;; Mint 1 CT to tx-sender
             (unwrap! (ft-mint? clarity-token u1 tx-sender) (err "err-mint-ft"))
 
-            ;; Chabge claim-status for tx-sender to false
+            ;; Change claim-status for tx-sender to false
             (ok (map-set can-claim tx-sender false))
     )
 )
