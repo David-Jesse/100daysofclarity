@@ -96,4 +96,21 @@
     )
 )
 
-;; Stacking Mint
+;; Stacking Claim
+;; @desc - Function only for mining from stacking claim
+;; @param - Amount (uint), the amount of tokens earned through stacking
+(define-public (earned-ct (amount uint)) 
+    (let     
+        (
+
+        )
+            ;; Asserts amount < than remaing supply
+
+            ;; Assert that contract-caller is .stacking-simple
+
+            ;; Mint FT to tx-sender
+
+
+            (ok 1)
+    )
+)

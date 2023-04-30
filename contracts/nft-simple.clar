@@ -21,7 +21,7 @@
 (define-constant collection-root-uri "ipfs://ipfs/QmYcrELFT5c9pjSygFFXkbjfbMHB5cBoWJDGaTvrP/")
 
 ;; NFT Price
-(define-constant simple-nft-price u100000000)
+(define-constant simple-nft-price u1000000)
 
 ;; Collection index
 (define-data-var collection-index uint u1)
@@ -55,7 +55,7 @@
 ;; Transfer Function
 (define-public (transfer (id uint) (sender principal) (recipient principal)) 
    (begin 
-        (asserts! (is-eq tx-sender sender) (err u1))
+       ;; (asserts! (is-eq tx-sender sender) (err u1))
         (nft-transfer? simple-nft id sender recipient)
    )
 )
