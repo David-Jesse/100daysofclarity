@@ -26,8 +26,7 @@
             (current-user-height-differences (map map-from-ids-to-height-difference current-user-stakes))
         )
 
-            (ok (fold + current-user-height-differences u0))
-            
+            (ok (fold + current-user-height-differences u0))     
     )
 )
 
@@ -73,7 +72,7 @@
          (asserts! (is-eq (some tx-sender) current-nft-owner) (err "err-not-owner"))
 
         ;; Assert that NFT submitted is not already staked
-        
+
         ;; Stake NFT custodially -> Transfer NFT from tx-sender to contrac
 
         ;; Update NFT-status map
