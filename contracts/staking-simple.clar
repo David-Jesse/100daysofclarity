@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Map that keeps track of the status of an NFT
-(define-map NFT-status uint {last-staked-or-claimed: (optional uint), staker: principal})
+(define-map nft-status uint {last-staked-or-claimed: (optional uint), staker: principal})
 
 ;; Map that keeps track of all the NFTs a user stakes
 (define-map user-stakes principal (list 100 uint))
@@ -34,18 +34,19 @@
 (define-private (map-from-ids-to-height-difference (item uint)) 
     (let       
         (
-            (current-item-status (default-to {last-staked-or-claimed: (some block-height), staker: tx-sender} (map-get? NFT-status item)))
+            (current-item-status (default-to {last-staked-or-claimed: (some block-height), staker: tx-sender} (map-get? nft-status item)))
             (current-item-height (get last-staked-or-claimed current-item-status))
         )
             (- block-height (default-to u0 current-item-height))
     )
 )
 
+
 ;; Check NFT stack status
 ;; @desc - Read only function that gets the current stake status-map (aka NFT status)
-;; params - Item (uint), NFT identifier that we are checking status
+;; params - Item (uint), NFT identifier that whose status is being checked
 (define-read-only (get-stake-status (item uint)) 
-    (map-get? NFT-status item)
+    (map-get? nft-status item)
 )
 
 ;; Check principal reward rate
@@ -65,21 +66,24 @@
     (let       
         (
             (current-nft-owner (unwrap! (contract-call? .nft-simple get-owner item) (err "err-item-not-minted")))
-
+            (current-user-stakes (default-to (list ) (map-get? user-stakes tx-sender)))
         )
 
         ;; Assert that user owns the NFT submitted
          (asserts! (is-eq (some tx-sender) current-nft-owner) (err "err-not-owner"))
 
         ;; Assert that NFT submitted is not already staked
+        ;; Assert that last-claimedd-or-staked is-none
+        (asserts! (or (is-none (map-get? nft-status item)) (is-none (get last-staked-or-claimed (default-to {last-staked-or-claimed: none, staker: tx-sender} (map-get? nft-status item))))) (err "err-already-staked"))
 
         ;; Stake NFT custodially -> Transfer NFT from tx-sender to contrac
+        (unwrap! (contract-call? .nft-simple transfer item tx-sender (as-contract tx-sender)) (err "err-nft-transfer-to-contract"))
 
         ;; Update NFT-status map
+        (map-set nft-status item {last-staked-or-claimed: (some block-height), staker: tx-sender})
 
-        ;; Update user-status map
-
-        (ok 1)
+        ;; Update user-stakes map
+        (ok (unwrap! (as-max-len? (append current-user-stakes item) u100) (err "err-user-stakes-overflow")))
     )
 )
 
@@ -90,7 +94,9 @@
 (define-public (unstake-nft (item uint)) 
     (let         
         (
-
+            (current-nft-status (unwrap! (map-get? nft-status item)) (err "err-no-nft-status"))
+            (current-user-stakes (unwrap! (map-get? user-stakes tx-sender)) (err "err-no-user-stakes"))
+            
         )
             ;; Asserts that item is staked
 
@@ -98,7 +104,7 @@
 
             ;; Transfer NFT from contract to staker/tx-sender
 
-            ;; If unstaked balance > 0
+            ;; If unclaimed balance > 0
                 ;; Send unclaimed balance
                 ;; Dont send
 

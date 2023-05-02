@@ -97,7 +97,7 @@
 )
 
 ;; Stacking Claim
-;; @desc - Function only for mining from stacking claim
+;; @desc - Function only for mining from staking claims
 ;; @param - Amount (uint), the amount of tokens earned through stacking
 (define-public (earned-ct (amount uint)) 
     (let     
