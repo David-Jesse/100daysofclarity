@@ -24,7 +24,7 @@ Clarinet.test({
 
         console.log(stakeBlock.receipts[0].events)
         stakeBlock.receipts[0].result.expectOk()
-        
+
         // block.receipts[0].results.expectedOk()
 
         // // assert: review returned data, contract state, and other requirements
@@ -67,6 +67,8 @@ Clarinet.test({
         console.log(getUnclaimedBalance.result)
 
         getUnclaimedBalance.result.expectOk().expectUint(6)
+
+        console.log(chain.getAssertMaps())
 
         // // TODO
         // assertEquals("TODO", "a complete test");
