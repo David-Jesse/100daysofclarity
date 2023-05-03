@@ -106,7 +106,7 @@
             (current-remaining-supply (- u100 current-supply))
         )
             ;; Asserts amount < than remaing supply
-            (asserts! (< amount current-supply) (err "err-no-mints-left"))
+            (asserts! (< amount current-remaining-supply) (err "err-no-mints-left"))
 
             ;; Assert that contract-caller is .stacking-simple
             (asserts! (is-eq contract-caller .staking-simple) (err "err-not-contract-caller"))
