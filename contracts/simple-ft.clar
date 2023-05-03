@@ -102,15 +102,17 @@
 (define-public (earned-ct (amount uint)) 
     (let     
         (
-
+            (current-supply (unwrap! (get-total-supply) (err "err-total-supply")))
+            (current-remaining-supply (- u100 current-supply))
         )
             ;; Asserts amount < than remaing supply
+            (asserts! (< amount current-supply) (err "err-no-mints-left"))
 
             ;; Assert that contract-caller is .stacking-simple
+            (asserts! (is-eq contract-caller .staking-simple) (err "err-not-contract-caller"))
 
             ;; Mint FT to tx-sender
+            (ok (unwrap! (ft-mint? clarity-token amount tx-sender) (err "err-minting-ft")))
 
-
-            (ok 1)
     )
 )
