@@ -58,6 +58,8 @@ Clarinet.test({
 
         console.log(getUnclaimedBalance.result)
 
+        getUnclaimedBalance.result.expectOk().expectUint(6)
+
         
 
         // // TODO

@@ -36,7 +36,7 @@ Clarinet.test({
 
         block.receipts[0].result.expectOk().expectBool(true);
         
-        console.log(block.receipts[0].eevents)
+        console.log(block.receipts[0].events)
         
         block.receipts[0].events.expectNonFungibleTokenMintEvent(
              types.uint(1),
