@@ -49,7 +49,7 @@ Clarinet.test({
           Tx.contractCall("nft-simple", "mint", [], deployer.address)
         ]);
 
-        console.log(mintBlock.receipts[0].events)
+        // console.log(mintBlock.receipts[0].events)
 
         chain.mineEmptyBlock(1)
 
@@ -57,7 +57,7 @@ Clarinet.test({
             Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address)
         ]);
 
-        console.log(stakeBlock.receipts[0].events)
+        // 
         stakeBlock.receipts[0].result.expectOk()
 
         chain.mineEmptyBlock(5)
@@ -66,9 +66,7 @@ Clarinet.test({
 
         console.log(getUnclaimedBalance.result)
 
-        getUnclaimedBalance.result.expectOk().expectUint(6)
-
-        console.log(chain.getAssertMaps())
+        getUnclaimedBalance.result.expecteOk().expectUint(6)
 
         // // TODO
         // assertEquals("TODO", "a complete test");

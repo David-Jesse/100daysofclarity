@@ -137,3 +137,16 @@
  (define-public (burn-test-token (amount uint) (sender principal)) 
     (ft-burn? test-token amount sender)
  )
+
+;; Day 90 - Buffers
+(define-read-only (test-element-at (test-buff (buff 30))) 
+    (element-at? test-buff u1)
+)
+
+(define-read-only (test-index-of (test-buff (buff 30))) 
+    (index-of? test-buff 0x00)
+)
+
+(define-read-only (test-concat (test-buff (buff 30))) 
+    (concat test-buff 0x000000)
+)
