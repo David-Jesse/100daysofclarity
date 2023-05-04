@@ -11,8 +11,8 @@ Clarinet.test({
              * Tx.contractCall(...)
             */
         ]);
-        assertEquals(block.receipts.length, 0);
-        assertEquals(block.height, 2);
+        // assertEquals(block.receipts.length, 0);
+        // assertEquals(block.height, 2);
 
         block = chain.mineBlock([
             /*

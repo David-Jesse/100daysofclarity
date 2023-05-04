@@ -19,20 +19,13 @@ Clarinet.test({
         chain.mineEmptyBlock(1)
 
         let stakeBlock = chain.mineBlock([
-            Tx.contractCall("staking-simple", "stake-nft", [types.uint[1]], deployer.address)
-        ]);
+            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address)
+        ])
 
         console.log(stakeBlock.receipts[0].events)
         stakeBlock.receipts[0].result.expectOk()
 
-        // block.receipts[0].results.expectedOk()
-
-        // // assert: review returned data, contract state, and other requirements
-        // assertEquals(block.receipts.length, 0);
-        // assertEquals(block.height, 2);
-
-        // // TODO
-        // assertEquals("TODO", "a complete test");
+        // block.receipts[0].results.expectOk()
     },
 });
 
