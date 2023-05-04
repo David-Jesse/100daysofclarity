@@ -33,7 +33,7 @@ Clarinet.test({
 Clarinet.test({
     name: "Get unclaimed balance after 5 blocks",
     async fn(chain: Chain, accounts: Map<string, Account>) {
-        // arrange: set up the chain, state, and other required elements
+        
         let deployer = accounts.get["deployer"]!;
         let wallet_1 = accounts.get["wallet_1"]!;
 
@@ -54,7 +54,10 @@ Clarinet.test({
 
         chain.mineEmptyBlock(5)
 
-        const getUnclaimedBalance = chain.callReadOnlyFn("stacking-simple", "get-unclaimed-balance", [], deployer.address)
+        const getUnclaimedBalance = chain.callReadOnlyFn("staking-simple", "get-unclaimed-balance", [], deployer.address);
+
+        console.log(getUnclaimedBalance.result)
+
         
 
         // // TODO

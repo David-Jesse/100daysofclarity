@@ -1,4 +1,3 @@
-
 import { Clarinet, Tx, Chain, Account, Contract, types } from 'https://deno.land/x/clarinet@v1.4.0/index.ts';
 import { assertEquals } from 'https://deno.land/std@0.170.0/testing/asserts.ts';
 
@@ -42,11 +41,10 @@ Clarinet.test({
         block.receipts[0].events.expectNonFungibleTokenMintEvent(
              types.uint(1),
              wallet_1.address,
-             deployer.address   
+             deployer.address,   
             `${deployer.address}.nft-simple`,
             "simple-nft"
         )
-
     }
 })
 
