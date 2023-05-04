@@ -11,7 +11,7 @@ Clarinet.test({
 
         // act: perform actions related to the current test
         let mintBlock = chain.mineBlock([
-          Tx.contractCall("nft-simple", "mint", [], deployer.address)
+          Tx.contractCall("nft-simple", "mint", [], deployer.address())
         ]);
 
         console.log(mintBlock.receipts[0].events)
@@ -19,7 +19,7 @@ Clarinet.test({
         chain.mineEmptyBlock(1)
 
         let stakeBlock = chain.mineBlock([
-            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address)
+            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address())
         ])
 
         console.log(stakeBlock.receipts[0].events)

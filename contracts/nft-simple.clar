@@ -76,7 +76,7 @@
             (asserts! (< current-index collection-limit)  (err "err-minted-out"))
 
             ;; Charge tx-sender for simple NFT
-            ;; (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
+            (unwrap! (stx-transfer? simple-nft-price tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
 
             ;; Mint Simple NFT
              (unwrap! (nft-mint? simple-nft current-index tx-sender) (err "err-minting"))

@@ -1,28 +1,28 @@
 import { Clarinet, Tx, Chain, Account, Contract, types } from 'https://deno.land/x/clarinet@v1.4.0/index.ts';
 import { assertEquals } from 'https://deno.land/std@0.170.0/testing/asserts.ts';
 
-// Clarinet.test({
-//     name: "Ensure that the right amount of STX (nft-price ) is transfered by checking balance ",
-//     async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
-//         let deployer = accounts.get("deployer")!;
-//         let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+    name: "Ensure that the right amount of STX (nft-price ) is transfered by expectingEvent",
+    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+        let deployer = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
 
-//         let block = chain.mineBlock([
-//             Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
-//         ]);
+        let block = chain.mineBlock([
+            Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
+        ]);
 
-//         block.receipts[0].result.expectOk().expectBool(true);
+        block.receipts[0].result.expectOk().expectBool(true);
         
-//         console.log(block.receipts[0].eevents)
+        console.log(block.receipts[0].events)
         
-//         block.receipts[0].events.expectSTXTransferEvent(
-//              10000000,
-//              wallet_1.address,
-//              deployer.address
-//         )
+        block.receipts[0].events.expectSTXTransferEvent(
+             10000000,
+             wallet_1.address,
+             deployer.address
+        )
 
-//     }
-// })
+    }
+})
 
 Clarinet.test({
     name: "Ensure that the right NFT is minted to the right address",
@@ -38,7 +38,7 @@ Clarinet.test({
         
         console.log(block.receipts[0].events)
         
-        block.receipts[0].events.expectNonFungibleTokenMintEvent(
+        block.receipts[0].event.expectNonFungibleTokenMintEvent(
              types.uint(1),
              wallet_1.address,
              deployer.address,   
@@ -49,21 +49,21 @@ Clarinet.test({
 })
 
 
-// Clarinet.test({
-//     name: "Ensure that the right amount of STX (nft price) is transferred by checking balance ",
-//     async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
-//         let deployer = accounts.get("deployer")!;
-//         let wallet_1 = accounts.get("wallet_1")!;
+Clarinet.test({
+    name: "Ensure that the right amount of STX (nft price) is transferred by checking balance ",
+    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+        let deployer = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
 
-//         let block = chain.mineBlock([
-//             Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
-//         ]);
+        let block = chain.mineBlock([
+            Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
+        ]);
 
-//         block.receipts[0].result.expectOk().expectBool(true);
+        block.receipts[0].result.expectOk().expectBool(true);
         
-//         console.log(block.receipts[0].eevents)
+        console.log(block.receipts[0].events)
         
-//         assertEquals(chain.getAssertMaps().assets['STX'] [wallet_1_address], 99999990000000)
+        assertEquals(chain.getAssertMaps().assets['STX'][wallet_1.address], 99999990000000)
 
-//     }
-// })
+    }
+})
