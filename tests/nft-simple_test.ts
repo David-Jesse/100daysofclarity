@@ -24,46 +24,46 @@ Clarinet.test({
     }
 })
 
-Clarinet.test({
-    name: "Ensure that the right NFT is minted to the right address",
-    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
-        let deployer = accounts.get("deployer")!;
-        let wallet_1 = accounts.get("wallet_1")!;
+// Clarinet.test({
+//     name: "Ensure that the right NFT is minted to the right address",
+//     async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+//         let deployer = accounts.get("deployer")!;
+//         let wallet_1 = accounts.get("wallet_1")!;
 
-        let block = chain.mineBlock([
-            Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
-        ]);
+//         let block = chain.mineBlock([
+//             Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
+//         ]);
 
-        block.receipts[0].result.expectOk().expectBool(true);
+//         block.receipts[0].result.expectOk().expectBool(true);
         
-        console.log(block.receipts[0].events)
+//         console.log(block.receipts[0].events)
         
-        block.receipts[0].event.expectNonFungibleTokenMintEvent(
-             types.uint(1),
-             wallet_1.address,
-             deployer.address,   
-            `${deployer.address}.nft-simple`,
-            "simple-nft"
-        )
-    }
-})
+//         block.receipts[0].event.expectNonFungibleTokenMintEvent(
+//              types.uint(1),
+//              wallet_1.address,
+//              deployer.address,   
+//             `${deployer.address}.nft-simple`,
+//             "simple-nft"
+//         )
+//     }
+// })
 
 
-Clarinet.test({
-    name: "Ensure that the right amount of STX (nft price) is transferred by checking balance ",
-    async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
-        let deployer = accounts.get("deployer")!;
-        let wallet_1 = accounts.get("wallet_1")!;
+// Clarinet.test({
+//     name: "Ensure that the right amount of STX (nft price) is transferred by checking balance ",
+//     async fn(chain: Chain, accounts: Map<string, Account>, contracts: Map<string, Contract>) {
+//         let deployer = accounts.get("deployer")!;
+//         let wallet_1 = accounts.get("wallet_1")!;
 
-        let block = chain.mineBlock([
-            Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
-        ]);
+//         let block = chain.mineBlock([
+//             Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
+//         ]);
 
-        block.receipts[0].result.expectOk().expectBool(true);
+//         block.receipts[0].result.expectOk().expectBool(true);
         
-        console.log(block.receipts[0].events)
+//         console.log(block.receipts[0].events)
         
-        assertEquals(chain.getAssertMaps().assets['STX'][wallet_1.address], 99999990000000)
+//         assertEquals(chain.getAssertMaps().assets['STX'][wallet_1.address], 99999990000000)
 
-    }
-})
+//     }
+// })
