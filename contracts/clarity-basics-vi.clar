@@ -150,3 +150,8 @@
 (define-read-only (test-concat (test-buff (buff 30))) 
     (concat test-buff 0x000000)
 )
+
+;; Day 91 - Buffers Contd/Get-Block-Info? & Intro to VRF
+(define-read-only (test-get-block (block uint)) 
+    (get-block-info? vrf-seed block)
+)
