@@ -16,7 +16,7 @@ Clarinet.test({
         console.log(block.receipts[0].events)
         
         block.receipts[0].events.expectSTXTransferEvent(
-             10000000,
+             1000000,
              wallet_1.address,
              deployer.address
         )

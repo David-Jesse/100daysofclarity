@@ -6,12 +6,12 @@ Clarinet.test({
     name: "Ensure that user can mint NFT & stake",
     async fn(chain: Chain, accounts: Map<string, Account>) {
         // arrange: set up the chain, state, and other required elements
-        let deployer = accounts.get["deployer"]!;
-        let wallet_1 = accounts.get["wallet_1"]!;
+        let deployer = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
 
         // act: perform actions related to the current test
         let mintBlock = chain.mineBlock([
-          Tx.contractCall("nft-simple", "mint", [], deployer.address())
+          Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
         ]);
 
         console.log(mintBlock.receipts[0].events)
@@ -19,7 +19,7 @@ Clarinet.test({
         chain.mineEmptyBlock(1)
 
         let stakeBlock = chain.mineBlock([
-            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address())
+            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], wallet_1.address)
         ])
 
         console.log(stakeBlock.receipts[0].events)
@@ -34,12 +34,12 @@ Clarinet.test({
     name: "Get unclaimed balance after 5 blocks",
     async fn(chain: Chain, accounts: Map<string, Account>) {
         
-        let deployer = accounts.get["deployer"]!;
-        let wallet_1 = accounts.get["wallet_1"]!;
+        let deployer = accounts.get("deployer")!;
+        let wallet_1 = accounts.get("wallet_1")!;
 
         // act: perform actions related to the current test
         let mintBlock = chain.mineBlock([
-          Tx.contractCall("nft-simple", "mint", [], deployer.address)
+          Tx.contractCall("nft-simple", "mint", [], wallet_1.address)
         ]);
 
         console.log(mintBlock.receipts[0].events)
@@ -47,7 +47,7 @@ Clarinet.test({
         chain.mineEmptyBlock(1)
 
         let stakeBlock = chain.mineBlock([
-            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], deployer.address)
+            Tx.contractCall("staking-simple", "stake-nft", [types.uint(1)], wallet_1.address)
         ]);
 
         // console.log(stakeBlock.receipts[0].events)
@@ -55,15 +55,15 @@ Clarinet.test({
         chain.mineEmptyBlock(5)
         
         let claimBlock = chain.mineBlock([
-            Tx.contractCall("simple-staking", "claim-reward", [types.uint(1)], deployer.address)
+            Tx.contractCall("staking-simple", "claim-reward", [types.uint(1)], wallet_1.address)
         ]);
 
         // const getUnclaimedBalance = chain.callReadOnlyFn("staking-simple", "get-unclaimed-balance", [], deployer.address);
 
         console.log(claimBlock.receipts[0])
 
-        console.log(chain.getAssertMaps())
-        assertEquals(chain.getAssertMaps().assets[".simple-ft.clarity-token"][deployer.address], 6)
+        console.log(chain.getAssetsMaps())
+        assertEquals(chain.getAssetsMaps().assets[".simple-ft.clarity-token"][wallet_1.address], 6)
 
 
         

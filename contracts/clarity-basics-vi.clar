@@ -46,7 +46,7 @@
         ;; Map set whitelist-map
         (ok (map-set whitelist-map whitelist-address mints-allocated))
     )
-)   
+)  
 
 ;; Day 58 - Non-custodial Functions
 ;; Day 59 - Non custodial Functions contd.
@@ -122,6 +122,7 @@
     (ft-mint? test-token u1 tx-sender)
  )
 
+
  (define-read-only (get-test-token-balance (user principal)) 
     (ft-get-balance test-token user)
  )
@@ -155,3 +156,4 @@
 (define-read-only (test-get-block (block uint)) 
     (get-block-info? vrf-seed block)
 )
+

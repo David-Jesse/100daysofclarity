@@ -22,16 +22,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Check unclaimed balance
-(define-read-only (get-unclaimed-balance) 
-    (let      
-        (
-            (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "err-no-stakes")))
-            (current-user-height-differences (map map-from-ids-to-height-difference current-user-stakes))
-        )
+;; (define-read-only (get-unclaimed-balance) 
+;;     (let      
+;;         (
+;;             (current-user-stakes (unwrap! (map-get? user-stakes tx-sender) (err "err-no-stakes")))
+;;             (current-user-height-differences (map map-from-ids-to-height-difference current-user-stakes))
+;;         )
 
-            (ok (fold + current-user-height-differences u0))     
-    )
-)
+;;             (ok (fold + current-user-height-differences u0))     
+;;     )
+;; )
 
 ;; Private function that maps list of ids to list of height differences
 (define-private (map-from-ids-to-height-difference (item uint)) 
