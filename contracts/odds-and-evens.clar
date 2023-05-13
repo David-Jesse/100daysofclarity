@@ -10,6 +10,7 @@
 
 ;; Bet
 ;; Create Bet -> A bet created between principal A (starts), principal B (Optional), bet amount & bet height
+;; Cancel bet -> Maual? or does it auto-expire?
 ;; Match Bet -> Principal B spots Bet A & fills in the second slot. Bet is locked until reveal height
 ;; Reveal Bet -> Once reveal height is surpassed, either player can call bet result
 
@@ -85,8 +86,48 @@
 ;; Bet Functions ;;
 ;;;;;;;;;;;;;;;;;;;
 
+;; Open / Create Bet
+;; @desc - Public function for creating a new bet
+;; @param - Amount (uint), amount of bet / bet size - Height (uint), block that we're betting on        
+(define-public (create-bet (amount uint) (height uint)) 
+    (let        
+        (
+            (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+            (current-active-user-bets (get active-bets current-user-bets))
+        )
 
+            ;; Assert that amount is less than or equal to 50 STX
 
+            ;; Assert that amount is a factor of 5 (mod 5 = 0)
+
+            ;; Assert that height is higher than (min-future-height + block-height) and lesser than (max-future-height + block-height)
+
+            ;; Assert that length of current-active-user-bets is < 3
+
+            ;; Charge create-match-fee in STX
+
+            ;; Map-set current-user bets
+
+            ;; Map-set open bets
+
+            ;; Map-set bets
+            (ok 1)
+    )
+)
+
+;; Match / Join bet
+;; @desc -> Public function for joining or matching an open bet as principal B
+;; @param -> None
+(define-public (match-bet (bet-id uint)) 
+    (let            
+        (
+            (current-bet (unwrap! (map-get? bets bet-id) (err "err-bet-doesnt-exist")))
+            (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+        )
+
+            (ok 1)
+    )
+)
 
 
 
