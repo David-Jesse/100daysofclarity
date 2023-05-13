@@ -60,6 +60,11 @@ path = 'contracts/nft-simple.clar'
 clarity_version = 1
 epoch = 2.0
 
+[contracts.odds-and-evens]
+path = 'contracts/odds-and-evens.clar'
+clarity_version = 2
+epoch = 2.1
+
 [contracts.offspring-will]
 path = 'contracts/offspring-will.clar'
 clarity_version = 1
