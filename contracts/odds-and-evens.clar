@@ -51,10 +51,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  ;; Variable that keeps track of all open bets
+ (define-data-var bet-index uint u0)
+
  (define-data-var open-bets (list 100 uint) (list ))
 
 ;; Variable that keeps track of all active bets
 (define-data-var active-bets (list 100 uint) (list ))
+
+;; Helper var for filtering out uints
+(define-data-var helper-uint uint u0)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,6 +97,8 @@
 (define-public (create-bet (amount uint) (height uint)) 
     (let        
         (
+            (current-bet-id (var-get bet-index))
+            (next-bet-id (+ u1 current-bet-id))
             (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
             (current-active-user-bets (get active-bets current-user-bets))
         )
@@ -102,15 +109,17 @@
 
             ;; Assert that height is higher than (min-future-height + block-height) and lesser than (max-future-height + block-height)
 
-            ;; Assert that length of current-active-user-bets is < 3
-
             ;; Charge create-match-fee in STX
 
             ;; Map-set current-user bets
 
-            ;; Map-set open bets
+            ;; Var-set open bets
 
             ;; Map-set bets
+
+            ;; Var-set bet-index to next-index
+
+            
             (ok 1)
     )
 )
@@ -118,17 +127,36 @@
 ;; Match / Join bet
 ;; @desc -> Public function for joining or matching an open bet as principal B
 ;; @param -> None
-(define-public (match-bet (bet-id uint)) 
+(define-public (match-bet (bet uint)) 
     (let            
         (
-            (current-bet (unwrap! (map-get? bets bet-id) (err "err-bet-doesnt-exist")))
+            (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
             (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+            (current-user-open-bets (get open-bets current-user-bets))
+            (current-active-bets (get active-bets current-user-bets))
+            (current-bet-height-bet (get height-bet current-bet))
         )
+
+            ;; Assert that block-height is equal to or less than the current-bet-height-bet
+
+            ;; Assert that current-user-active bet length is < or equal to 3
+
+            ;; Transfer current bet amount in STX
+
+            ;; Transfer create-match-fee in STX
+
+            ;; Map-set current-bet by merging current-bet with {matches-bet: (some tx-sender)} 
+
+            ;; Map-set user-bets by appending bet to current-active-bets list & by filtering out bet with filter-out-uint
+
+            ;; Var-set helper-uint with bet
 
             (ok 1)
     )
 )
 
-
+(define-private (filter-out-uint (bet uint)) 
+    (not (is-eq bet (var-get helper-uint)))
+)
 
 
