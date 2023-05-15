@@ -27,6 +27,7 @@
 ;; Max user active bets
 (define-constant max-active-bets u3)
 
+;; Max bet fee
 (define-constant max-bet-fee u50)
 
 ;; Create / match bet fee
@@ -51,9 +52,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- ;; Variable that keeps track of all open bets
+ ;; Variable that keeps track of bet index
  (define-data-var bet-index uint u0)
 
+;; Variable that keeps track of open-bets
  (define-data-var open-bets (list 100 uint) (list ))
 
 ;; Variable that keeps track of all active bets
@@ -197,9 +199,25 @@
 
             ;; Check if random number at block mod 2 is-eq 0
                 ;; Random number is even
-                ;; Random number is odd
+                    ;; Check if opener-guess is even
+                        ;; Send double-amount to opener
+                        ;; Map-set bet by merging current bet with {winner: }
 
-            ;; Send x2 current-bet-amount
+                        ;; Send double-amount to matcher
+                        ;; Map-set bet by merging current-bet with {winner: }
+                ;; Random number is odd
+                    ;; Check if opener-guess is odd
+                        ;; Send double-amount to matcher
+                        ;; Send double-amount to opener
+
+            ;; Var-set helper uint
+
+            ;; Map-set active-bets by filtering out bet from active bets
+
+            ;; Map-set user-bets by merging current-user-bets with active bets now filtered out
+
+
+
 
             
 
@@ -209,6 +227,42 @@
     )
 )
 
+;; Cancel Bet
+;; @desc - Function that cancels an open bet
+;; @param - Bet (uint), bet we're cancelling
+(define-public (cancel-bet (bet uint)) 
+    (let        
+        (
+            (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
+            (current-bet-opener (get opens-bet current-bet))
+            (current-bet-amount (get amount-bet current-bet))
+            (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
+            (current-user-open-bets (get open-bets current-user-bets))
+            (current-contract-wide-open-bets (var-get open-bets))
+        )
+
+            ;; Assert that tx-sender is current bet opener
+
+            ;; Assert that current-bet-matcher is-none
+
+            ;; Assert that current-current-wide-active-bet index-of is-none
+
+            ;; Assert that current-contract-wide-open-bets index-of bet is-some
+
+            ;; Assert that current-user-open-bets index-of bet is-some 
+
+            ;; Transfer STX (amount - 1) from contract to user
+
+            ;; Delete map entry
+
+            ;; Var-set helper-uint
+
+            ;; Map-set user-bet with filtered out open bet
+
+            ;; Var-set open-bets with filtered out open-bet
+            (ok 1)
+    )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Random Function ;;;;;
