@@ -189,26 +189,13 @@
             })
 
             ;; Var-set open-bets by filtering out bet from current-contract-wide-open-bets using filter-out-uint
-            
+            (var-set open-bets (filter filter-out-uint current-contract-wide-open-bets))
+
             ;; Var-set active bets by appending bet to current-contract-wide-active-bets
-
-
-
-;; (define-map bets uint { 
-;;     opens-bet: principal,
-;;     opens-bet-guess: bool,
-;;     matches-bet: (optional principal),
-;;     amount-bet: uint,
-;;     height-bet: uint,
-;;     winner: (optional principal)
-;;  })
-
-
-
-
-            (ok 1)
+            (ok (var-set active-bets (unwrap! (as-max-len? (append current-contract-wide-active-bets bet) u3) (err "err-active-bets-list-too-long"))))
     )
 )
+
 
 (define-private (filter-out-uint (bet uint)) 
     (not (is-eq bet (var-get helper-uint)))
