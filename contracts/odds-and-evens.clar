@@ -113,7 +113,7 @@
             (asserts! (is-eq (mod amount u5) u0) (err "err-bet-amount-not-factor-of-five"))
 
             ;; Assert that height is higher than (min-future-height + block-height) and lesser than (max-future-height + block-height)
-            (asserts! (and (>= height (+ min-future-height block-height)) (<= height (+ max-future-height block-height))) (err "err-block-height"))
+            (asserts! (and (>= height (+ min-future-height block-height)) (<= height (+ max-future-height block-height))) (err "err-bet-height"))
 
             ;; Charge create-match-fee in STX
             (unwrap! (stx-transfer? create-bet-fee tx-sender (as-contract tx-sender)) (err "err-stx-transfer")) 
@@ -223,9 +223,11 @@
             (current-contract-wide-active-bets (var-get active-bets))
             (random-number-at-block (unwrap! (get-random-uint-at-block current-bet-height) (err "err-random-number-at-block-height")))
         )
+            ;; Assert that tx-sender is current-bet-opener or current-bet-matcher
+            (asserts! (or (is-eq tx-sender current-bet-opener) (is-eq tx-sender current-bet-matcher)) (err "err-not-authorized"))
 
             ;; Assert that bet is active by checking index-of current-contract-wide-open-bets
-            (asserts! (is-some (index-of? current-contract-wide-open-bets bet)) (err "err-bet-not-active"))
+            (asserts! (is-some (index-of? current-contract-wide-active-bets bet)) (err "err-bet-not-active"))
 
             ;; Assert that block height is higher than current bet height
             (asserts! (> block-height current-bet-height) (err "err-bet-height"))
