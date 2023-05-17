@@ -96,34 +96,54 @@
 
 ;; Open / Create Bet
 ;; @desc - Public function for creating a new bet
-;; @param - Amount (uint), amount of bet / bet size - Height (uint), block that we're betting on        
+;; @param - Amount (uint), amount of bet / bet size - Height (uint), block that we're betting on, Guess (bool), true = even, false = odd
 (define-public (create-bet (amount uint) (height uint) (guess bool)) 
     (let        
         (
             (current-bet-id (var-get bet-index))
-            (next-bet-id (+ u1 current-bet-id))
+            (next-bet-id (var-get bet-index))
             (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
             (current-active-user-bets (get active-bets current-user-bets))
         )
 
             ;; Assert that amount is less than or equal to 50 STX
+            (asserts! (< amount u50000000) (err "err-bet-amount-too-high"))
 
             ;; Assert that amount is a factor of 5 (mod 5 = 0)
+            (asserts! (is-eq (mod amount u5) u0) (err "err-bet-amount-not-factor-of-five"))
 
             ;; Assert that height is higher than (min-future-height + block-height) and lesser than (max-future-height + block-height)
+            (asserts! (and (>= height (+ min-future-height block-height)) (<= height (+ max-future-height block-height))) (err "err-block-height"))
 
             ;; Charge create-match-fee in STX
+            (unwrap! (stx-transfer? create-bet-fee tx-sender (as-contract tx-sender)) (err "err-stx-transfer")) 
 
-            ;; Map-set current-user bets
+            ;; Send amount/bet STX to escrow/contract
+            (unwrap! (stx-transfer? amount tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
 
-            ;; Var-set open bets
+            ;; Map-set user-bets by merging current-user-bets
+            (map-set user-bets tx-sender (merge 
+                current-user-bets
+                {
+                   open-bets: (unwrap! (as-max-len? (append current-active-user-bets current-bet-id) u100) (err "err-user-bet-list-too-long"))
+                })
+            )
+
+            ;; Var-set open bets by appending bet-id
+            (var-set open-bets (unwrap! (as-max-len? (append (var-get open-bets) current-bet-id) u100) (err "err-open-bet-list-too-long")))
 
             ;; Map-set bets
+            (map-set bets current-bet-id {
+                opens-bet: tx-sender,
+                opens-bet-guess: guess,
+                matches-bet: none,
+                amount-bet: amount,
+                height-bet: height,
+                winner: none 
+            })
 
             ;; Var-set bet-index to next-index
-
-
-            (ok 1)
+            (ok (var-set bet-index (+ next-bet-id u1)))
     )
 )
 
@@ -143,23 +163,45 @@
         )
 
             ;; Assert that block-height is equal to or less than the current-bet-height-bet
+            (asserts! (is-eq (<= block-height current-bet-height-bet)) (err "err-bet-height"))
 
-            ;; Assert that current-user-active bet length is < or equal to 3
+            ;; Assert that current-user-active bet length is less than 3
+            (asserts! (< (len current-active-bets) u3) (err "err-active-bets-limit-exceeded"))
 
             ;; Transfer current bet amount in STX
-
-            ;; Transfer create-match-fee in STX
+            (unwrap! (stx-transfer? (+ (get amount-bet current-bet) create-bet-fee) tx-sender (as-contract tx-sender)) (err "err-stx-transfer"))
 
             ;; Map-set current-bet by merging current-bet with {matches-bet: (some tx-sender)} 
-
-            ;; Map-set user-bets by appending bet to current-active-bets list & by filtering out bet with filter-out-uint
+            (map-set bets bet (merge
+                current-bet 
+                {
+                    matches-bet: (some tx-sender) 
+                }
+            ))
 
             ;; Var-set helper-uint with bet
+            (var-set helper-uint bet)
+            
+            ;; Map-set user-bets by appending bet to current-active-bets list & by filtering out bet with filter-out-uint
+            (map-set user-bets tx-sender {
+                open-bets: (filter filter-out-uint current-user-open-bets),
+                active-bets: (unwrap! (as-max-len? (append current-active-bets bet) u3) (err "err-bet-limit-exceeded"))
+            })
 
             ;; Var-set open-bets by filtering out bet from current-contract-wide-open-bets using filter-out-uint
-
+            
             ;; Var-set active bets by appending bet to current-contract-wide-active-bets
 
+
+
+;; (define-map bets uint { 
+;;     opens-bet: principal,
+;;     opens-bet-guess: bool,
+;;     matches-bet: (optional principal),
+;;     amount-bet: uint,
+;;     height-bet: uint,
+;;     winner: (optional principal)
+;;  })
 
 
 
@@ -215,13 +257,6 @@
             ;; Map-set active-bets by filtering out bet from active bets
 
             ;; Map-set user-bets by merging current-user-bets with active bets now filtered out
-
-
-
-
-            
-
-
 
             (ok 1)
     )
