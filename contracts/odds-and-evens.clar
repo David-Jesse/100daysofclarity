@@ -223,7 +223,7 @@
         )
 
             ;; Assert that bet is active by checking index-of current-contract-wide-open-bets
-
+            
             ;; Assert that block height is higher than current bet height
 
             ;; Check if random number at block mod 2 is-eq 0
@@ -258,31 +258,43 @@
             (current-bet (unwrap! (map-get? bets bet) (err "err-bet-doesnt-exist")))
             (current-bet-opener (get opens-bet current-bet))
             (current-bet-amount (get amount-bet current-bet))
+            (current-bet-matcher (get matches-bet current-bet))
             (current-user-bets (default-to {open-bets: (list ), active-bets: (list )} (map-get? user-bets tx-sender)))
             (current-user-open-bets (get open-bets current-user-bets))
             (current-contract-wide-open-bets (var-get open-bets))
+            (current-contract-wide-active-bets (var-get active-bets))
         )
 
             ;; Assert that tx-sender is current bet opener
+            (asserts! (is-eq tx-sender current-bet-opener) (err "err-not-opener"))
 
             ;; Assert that current-bet-matcher is-none
+            (asserts! (is-none current-bet-matcher) (err "err-bet-already-matched"))
 
-            ;; Assert that current-current-wide-active-bet index-of is-none
+            ;; Assert that current-contract-wide-open-bet index-of is-none
+            (asserts! (is-none (index-of? current-contract-wide-active-bets bet)) (err "err-bet-active"))
 
-            ;; Assert that current-contract-wide-open-bets index-of bet is-some
+            ;; Assert that current-contract-wide-open-bets index-of-bet is-some
+            (asserts! (is-some (index-of? current-contract-wide-open-bets bet)) (err "err-bet-not-open"))
 
-            ;; Assert that current-user-open-bets index-of bet is-some 
+            ;; Assert that current-user-open-bets index-of-bet is-some 
+            (asserts! (is-some (index-of? current-user-open-bets bet)) (err "err-bet-not-open"))
 
             ;; Transfer STX (amount - 1) from contract to user
+            (as-contract (unwrap! (stx-transfer? (- current-bet-amount u1) (as-contract tx-sender) tx-sender) (err "err-stx-transfer")))
 
             ;; Delete map entry
+            (map-delete bets bet)
 
             ;; Var-set helper-uint
+            (var-set helper-uint bet)
 
             ;; Map-set user-bet with filtered out open bet
+            (map-set user-bets tx-sender (merge current-user-bets {open-bets: (filter filter-out-uint current-user-open-bets)}))
 
             ;; Var-set open-bets with filtered out open-bet
-            (ok 1)
+            (ok (var-set open-bets (filter filter-out-uint current-contract-wide-open-bets)))
+            
     )
 )
 
