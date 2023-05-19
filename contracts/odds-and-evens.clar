@@ -226,7 +226,7 @@
             ;; Assert that tx-sender is current-bet-opener or current-bet-matcher
             (asserts! (or (is-eq tx-sender current-bet-opener) (is-eq tx-sender current-bet-matcher)) (err "err-not-authorized"))
 
-            ;; Assert that bet is active by checking index-of current-contract-wide-open-bets
+            ;; Assert that bet is active by checking index-of current-contract-wide-active-bets
             (asserts! (is-some (index-of? current-contract-wide-active-bets bet)) (err "err-bet-not-active"))
 
             ;; Assert that block height is higher than current bet height
