@@ -41,6 +41,12 @@
 ;; Map that keeps track of a discography
 (define-map discography principal (list 10 uint))
 
+;; Helper Uint
+(define-data-var helper-uint uint u0)
+
+;; Helper Principal
+(define-data-var helper-principal principal tx-sender)
+
 ;; Day - 28
 ;;;;;;;;;;;;;;;;;;;;
 ;; Read Functions ;;
@@ -184,32 +190,51 @@
 (define-public (add-admin (new-admin principal)) 
     (let  
         (
-            (test u0)
-
+            (current-admin (var-get admin))
         )
 
         ;; Assert that tx-sender is an existing admin
+        (asserts! (is-some (index-of (var-get admin) tx-sender) ) (err "err-not-admin"))
 
         ;; Assert that new-admin does not exist in admin list
+        (asserts! (is-none (index-of (var-get admin) new-admin)) (err "err-already-admin"))
 
-        ;; append new-admin to admin list
-
-        (ok test)
+        ;; Var-set admin by appending new-admin to admin list
+        (ok (var-set admin (unwrap! (as-max-len? (append current-admin new-admin) u10) (err "err-admin-overflow"))))
+    
     )
 )
 
-(define-public (remove-admin (removed-admin principal)) 
+
+(define-public (remove-admin (helping-admin principal)) 
     (let   
         (
-            (test u2)
+            (current-admin (var-get admin))
         )
             ;; Assert that tx-sender is an existing Admin
+            (asserts! (is-some (index-of current-admin tx-sender)) (err "err-not-admin"))
 
             ;; Assert that removed admin IS an existing admin
+            (asserts! (is-some (index-of current-admin helping-admin)) (err "err-not-an-admin"))
 
-            ;; Remove admin from admin-list
-        
+            ;; Var-set helper principal
+            (var-set helper-principal helping-admin)
 
-        (ok test)
+            ;; Filter set removed-admin
+            (ok (filter remove-principal-from-list current-admin))
     )
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Helper Function;;;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+;; Filter uint from list
+(define-private (remove-uint-from-list (helper-item uint)) 
+    (not (is-eq helper-item (var-get helper-uint)))
+)
+
+(define-private (remove-principal-from-list (helper-remover principal)) 
+    (not (is-eq helper-remover (var-get helper-principal)))
 )
