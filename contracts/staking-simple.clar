@@ -1,8 +1,7 @@
 ;; Staking - Simple
-;; A barebone simple staking contract
-;; User stakes "simple-nft" in exchange for "clarity-token"
+;; A streamlined staking contract where user can stake "simple-nft" tokens to earn "clarity-token" rewards
 ;; Written by David-Jesse
-;; Day 80
+;; Day - 80
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Cons, Vars, Maps ;;
