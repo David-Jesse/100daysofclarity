@@ -361,11 +361,11 @@
 )
 
 
-;; Things we'll test manually
-;; 1. Artist submits a collection
-    ;; Submit single NFT
-;; 2. Admin apporves whitelists collection
-;; 3. User mints NFT
-;; 4. User lists NFT
-;; 5.1 User buys NFT
-;; 5.2 User unlists NFT
+;; Things i'll test manually for : 
+    ;; 1. Artist submits a collection
+        ;; Submit single NFT
+    ;; 2. Admin apporves whitelists collection
+    ;; 3. User mints NFT
+    ;; 4. User lists NFT
+    ;; 5.1 User buys NFT
+    ;; 5.2 User unlists NFT
