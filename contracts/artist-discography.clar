@@ -118,7 +118,6 @@
             (merge 
                  current-album-data
                  {tracks: (unwrap! (as-max-len? (append current-album-tracks next-album-track-id) u20) (err u4))}
-
             )
         ))
         
@@ -163,16 +162,10 @@
                         title: album-title,
                         tracks: (list ),
                         height-published: block-height
-
                     })
-
                 )   
-
             ))
-
-
     ))
-
 )
 
 ;;;;;;;;;;;;;;;;;;;;;
