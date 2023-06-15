@@ -1,5 +1,5 @@
 ;; Staking - Simple
-;; A streamlined staking contract where user can stake "simple-nft" tokens to earn "clarity-token" rewards
+;; A streamlined staking contract where user can stake a "simple-nft" and earn "clarity-token" rewards
 ;; Written by David-Jesse
 ;; Day - 80
 

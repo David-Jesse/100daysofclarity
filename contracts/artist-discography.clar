@@ -96,7 +96,7 @@
         )
 
         ;; Assert that tx-sender is either artist or admin
-        (asserts! (or (is-eq tx-sender artist) (is-some (index-of (var-get admin) tx-sender))) (err u1))
+        (asserts! (or (is-eq tx-sender artist) (is-some (index-of (var-get admin) tx-sender))) (err u2))
 
         ;; Assert that album exists in discography
         (asserts! (is-some (index-of current-discography album-id)) (err u2))
